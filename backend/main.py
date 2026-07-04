@@ -12,7 +12,9 @@ app = FastAPI()
 # ✅ STEP 2 — Then add middleware
 origins = [
     "http://localhost:5173",
+    "https://localhost:5173",
     "https://store-managemant-eta.vercel.app",
+    "https://store-managemant-dtn01cxug-system-nirmata.vercel.app",
 ]
 
 app.add_middleware(
@@ -22,7 +24,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # ✅ STEP 3 — Then import everything else
 from src.utils.db import Base, engine
 from src.admin.model import admin, OTPVerification
