@@ -29,7 +29,7 @@ app.add_middleware(
         "https://store-managemant-eta.vercel.app",
         "https://store-managemant-dtn01cxug-system-nirmata.vercel.app",
     ],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
