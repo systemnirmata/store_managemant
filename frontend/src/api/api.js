@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: "https://storemanagement-production-7cc2.up.railway.app",
 });
 
 api.interceptors.request.use(config => {
