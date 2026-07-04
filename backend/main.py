@@ -3,28 +3,18 @@ load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 import os
 
-# ✅ STEP 1 — Create app FIRST
 app = FastAPI()
-
-# ✅ STEP 2 — Then add middleware
-origins = [
-    "http://localhost:5173",
-    "https://localhost:5173",
-    "https://store-managemant-eta.vercel.app",
-    "https://store-managemant-dtn01cxug-system-nirmata.vercel.app",
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],        # ← change to * temporarily
+    allow_credentials=False,    # ← must be False with *
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# ✅ STEP 3 — Then import everything else
+
 from src.utils.db import Base, engine
 from src.admin.model import admin, OTPVerification
 from src.admin.router import admin
@@ -40,7 +30,6 @@ from src.history.router import history_route
 
 Base.metadata.create_all(engine)
 
-# ✅ STEP 4 — Then include routers
 app.include_router(admin)
 app.include_router(categories_route)
 app.include_router(products_route)
@@ -50,4 +39,4 @@ app.include_router(history_route)
 
 @app.get("/")
 def home():
-    print("Home")
+    return {"status": "ok"}   # ← add return!
