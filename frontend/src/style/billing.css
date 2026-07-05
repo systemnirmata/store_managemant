@@ -1006,6 +1006,7 @@
     }
     .bp-section-card {
         margin: 10px 14px 16px;
+        max-height: none;
     }
     .bp-section-header {
         flex-direction: column;
@@ -1013,6 +1014,10 @@
     }
     .bp-section-search {
         width: 100%;
+    }
+    .bp-product-grid {
+        overflow-y: visible;
+        grid-template-columns: repeat(2, 1fr);
     }
     .bp-share-row {
         flex-direction: column;
