@@ -61,6 +61,32 @@ async function autoReconnect() {
     }
 }
 
+// ── RECONNECT PRINTER (called on page load) ──────────────────
+export async function reconnectPrinter() {
+    try {
+        if (!navigator.bluetooth) return false;
+
+        const devices = await navigator.bluetooth.getDevices();
+        if (devices.length === 0) return false;
+
+        const device = devices[0];
+        printerDevice = device;
+
+        device.addEventListener('gattserverdisconnected', () => {
+            printerCharacteristic = null;
+            autoReconnect();
+        });
+
+        printerCharacteristic = await getCharacteristic(device);
+        sessionStorage.setItem("printerName", device.name || "Printer");
+        console.log("✅ Printer auto reconnected!");
+        return true;
+    } catch (err) {
+        console.log("Auto reconnect failed:", err);
+        return false;
+    }
+}
+
 // ── CHECK IF CONNECTED ───────────────────────────────────────
 export function isPrinterConnected() {
     return printerCharacteristic !== null &&
