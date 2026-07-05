@@ -5,6 +5,9 @@ import { isPrinterConnected, getPrinterName, connectPrinter, disconnectPrinter }
 import { useState, useEffect } from "react";
 
 
+function Header() {
+  const navigate = useNavigate();
+  
 const [printerConnected, setPrinterConnected] = useState(false);
 const [printerName, setPrinterName] = useState(null);
 
@@ -26,8 +29,6 @@ const handleConnectPrinter = async () => {
     alert("Could not connect to printer. Make sure Bluetooth is ON and printer is nearby.");
   }
 };
-function Header() {
-  const navigate = useNavigate();
   return (
     <header className="header">
       <div onClick={() => navigate("/Dashboard")} className="header-left">
