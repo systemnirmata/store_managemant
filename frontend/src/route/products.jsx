@@ -4,6 +4,7 @@ import api from "../api/api";
 import { isAllowedName, isNonNegativeNumber } from "../utils/validation";
 import Header from "../components/Hader";
 import Footer from "../components/Footer";
+import "../style/products.css";
 const API_BASE = api.defaults.baseURL || "";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
@@ -244,22 +245,22 @@ function Products() {
   const activeCat = categories.find((c) => c.cid === activeCategory);
 
   return (
-    <div style={styles.page}>
+    <div className="products-page">
       <div><Header/></div>
       {/* Header */}
-      <div style={styles.header}>
+      <div className="products-header">
         <div>
-          <h2 style={styles.title}>Products</h2>
-          <p style={styles.subtitle}>Click a category to view products</p>
+          <h2 className="products-title">Products</h2>
+          <p className="products-subtitle">Click a category to view products</p>
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <button onClick={() => navigate("/Dashboard")} style={styles.backBtn}>← Back</button>
-          <button onClick={openAdd} style={styles.addBtn}>+ Add Product</button>
+        <div className="header-actions">
+          <button onClick={() => navigate("/Dashboard")} className="back-btn">← Back</button>
+          <button onClick={openAdd} className="add-product-btn">+ Add Product</button>
         </div>
       </div>
 
       {/* Category Cards */}
-      <div style={{ ...styles.cardGrid, overflowX: "auto", paddingBottom: "8px" }}>
+      <div className="category-grid">
         {categories.map((cat) => {
           const selected = getTotalSelected(cat.cid);
           const isActive = activeCategory === cat.cid;
@@ -267,17 +268,17 @@ function Products() {
             <div
               key={cat.cid}
               onClick={() => setActiveCategory(isActive ? null : cat.cid)}
-              style={{ ...styles.catCard, ...(isActive ? styles.catCardActive : {}) }}
+              className={`category-card ${isActive ? "active" : ""}`}
             >
-              <div style={styles.catIcon}>
+              <div className="category-icon">
                 {cat.cname.charAt(0).toUpperCase()}
               </div>
-              <div style={styles.catCardName}>{cat.cname}</div>
-              <div style={styles.catCardCount}>
+              <div className="category-name">{cat.cname}</div>
+              <div className="category-count">
                 {getProductsByCategory(cat.cid).length} items
               </div>
               {selected > 0 && (
-                <div style={styles.selectedBadge}>{selected}</div>
+                <div className="selected-badge">{selected}</div>
               )}
             </div>
           );
@@ -286,11 +287,11 @@ function Products() {
 
       {/* Product Section */}
       {activeCategory && activeCat && (
-        <div style={styles.productSection}>
-          <div style={styles.sectionHeader}>
-            <div style={styles.sectionLeft}>
-              <span style={styles.sectionTitle}>{activeCat.cname}</span>
-              <span style={styles.sectionCount}>
+        <div className="product-section">
+          <div className="section-header">
+            <div className="section-left">
+              <span className="section-title">{activeCat.cname}</span>
+              <span className="section-count">
                 {getProductsByCategory(activeCategory).length} products
               </span>
             </div>
@@ -301,14 +302,14 @@ function Products() {
               onChange={(e) =>
                 setSearches((prev) => ({ ...prev, [activeCategory]: e.target.value }))
               }
-              style={styles.searchInput}
+              className="search-input"
             />
           </div>
 
           {/* Product Cards */}
-          <div style={{ ...styles.productGrid, overflowY: "auto", maxHeight: "calc(100vh - 420px)" }}>
+          <div className="product-grid">
             {getFiltered(activeCategory).length === 0 ? (
-              <div style={styles.emptyMsg}>
+              <div className="empty-msg">
                 No products yet. Click "+ Add Product" to add.
               </div>
             ) : (
@@ -316,56 +317,56 @@ function Products() {
                 const qty = quantities[product.pid] || 0;
                 const imgSrc = product.image_url ? `${API_BASE}${product.image_url}` : null;
                 return (
-                  <div key={product.pid} style={styles.productCard}>
+                  <div key={product.pid} className="product-card">
 
                     {/* Product Image */}
-                    <div style={styles.imageBox}>
+                    <div className="image-box">
                       {imgSrc ? (
                         <img
                           src={imgSrc}
                           alt={product.product_name}
-                          style={styles.productImg}
+                          className="product-img"
                         />
                       ) : (
-                        <div style={styles.imagePlaceholder}>
+                        <div className="image-placeholder">
                           {product.product_name.charAt(0).toUpperCase()}
                         </div>
                       )}
                     </div>
 
                     {/* Product Info */}
-                    <div style={styles.productInfo}>
-                      <div style={styles.productName}>{product.product_name}</div>
+                    <div className="product-info">
+                      <div className="product-name">{product.product_name}</div>
                       {product.unit && (
-                        <div style={styles.productUnit}>{product.unit}</div>
+                        <div className="product-unit">{product.unit}</div>
                       )}
-                      <div style={styles.productPrice}>
+                      <div className="product-price">
                         ₹{parseFloat(product.price).toFixed(2)}
                       </div>
                     </div>
 
                     {/* Quantity */}
-                    <div style={styles.qtyRow}>
+                    <div className="qty-row">
                       {qty === 0 ? (
                         <button
                           onClick={() => increase(product.pid)}
-                          style={styles.addToCartBtn}
+                          className="add-to-cart-btn"
                         >
                           + Add
                         </button>
                       ) : (
-                        <div style={styles.qtyControls}>
-                          <button onClick={() => decrease(product.pid)} style={styles.qtyBtn}>−</button>
-                          <span style={styles.qtyNumber}>{qty}</span>
-                          <button onClick={() => increase(product.pid)} style={styles.qtyBtn}>+</button>
+                        <div className="qty-controls">
+                          <button onClick={() => decrease(product.pid)} className="qty-btn">−</button>
+                          <span className="qty-number">{qty}</span>
+                          <button onClick={() => increase(product.pid)} className="qty-btn">+</button>
                         </div>
                       )}
                     </div>
 
                     {/* Actions */}
-                    <div style={styles.actionRow}>
-                      <button onClick={() => openEdit(product)} style={styles.editBtn}>Edit</button>
-                      <button onClick={() => handleDelete(product.pid, product.product_name)} style={styles.deleteBtn}>Delete</button>
+                    <div className="action-row">
+                      <button onClick={() => openEdit(product)} className="edit-btn">Edit</button>
+                      <button onClick={() => handleDelete(product.pid, product.product_name)} className="delete-btn">Delete</button>
                     </div>
                   </div>
                 );
@@ -377,25 +378,25 @@ function Products() {
 
       {/* Add / Edit Modal */}
       {showModal && (
-        <div style={styles.overlay}>
-          <div style={styles.modal}>
-            <h3 style={styles.modalTitle}>
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3 className="modal-title">
               {editItem ? "Edit Product" : "Add New Product"}
             </h3>
 
             {/* Image Preview + Upload inside modal */}
-            <div style={styles.modalImageBox}>
+            <div className="modal-image-box">
               {previewImage ? (
-                <img src={previewImage} alt="preview" style={styles.modalImg} />
+                <img src={previewImage} alt="preview" className="modal-img" />
               ) : (
-                <div style={styles.imgPlaceholderText}>No photo selected</div>
+                <div className="img-placeholder-text">No photo selected</div>
               )}
             </div>
-            <div style={styles.fileRow}>
-              <button type="button" onClick={openCamera} style={styles.fileBtn}>
+            <div className="file-row">
+              <button type="button" onClick={openCamera} className="file-btn">
                 Take Photo
               </button>
-              <label style={styles.fileBtn}>
+              <label className="file-btn">
                 Choose from Gallery
                 <input
                   type="file"
@@ -405,27 +406,27 @@ function Products() {
                 />
               </label>
               {previewImage && (
-                <button type="button" onClick={handleRemoveImage} style={styles.removeImgBtn}>
+                <button type="button" onClick={handleRemoveImage} className="remove-img-btn">
                   Remove
                 </button>
               )}
             </div>
-            {cameraError && <div style={styles.cameraErrorText}>{cameraError}</div>}
+            {cameraError && <div className="camera-error-text">{cameraError}</div>}
 
-            <label style={styles.label}>Product Name *</label>
+            <label className="form-label">Product Name *</label>
             <input
               type="text"
               placeholder="e.g. Sting, Thums Up, Biscuit"
               value={form.product_name}
               onChange={(e) => setForm({ ...form, product_name: e.target.value })}
-              style={styles.input}
+              className="form-input"
             />
 
-            <label style={styles.label}>Category *</label>
+            <label className="form-label">Category *</label>
             <select
               value={form.cid}
               onChange={(e) => setForm({ ...form, cid: e.target.value })}
-              style={styles.input}
+              className="form-input"
             >
               <option value="">-- Select Category --</option>
               {categories.map((cat) => (
@@ -433,31 +434,31 @@ function Products() {
               ))}
             </select>
 
-            <label style={styles.label}>Unit / Size (optional)</label>
+            <label className="form-label">Unit / Size (optional)</label>
             <input
               type="text"
               placeholder="e.g. 250ml, 500g, piece"
               value={form.unit}
               onChange={(e) => setForm({ ...form, unit: e.target.value })}
-              style={styles.input}
+              className="form-input"
             />
 
-            <label style={styles.label}>Price (₹) *</label>
+            <label className="form-label">Price (₹) *</label>
             <input
               type="number"
               placeholder="e.g. 20"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
-              style={styles.input}
+              className="form-input"
               min="0"
               step="0.01"
             />
 
-            <div style={styles.modalActions}>
-              <button onClick={() => setShowModal(false)} style={styles.cancelBtn}>
+            <div className="modal-actions">
+              <button onClick={() => setShowModal(false)} className="cancel-btn">
                 Cancel
               </button>
-              <button onClick={handleSave} disabled={loading} style={styles.saveBtn}>
+              <button onClick={handleSave} disabled={loading} className="save-btn">
                 {loading ? "Saving..." : editItem ? "Update" : "Add Product"}
               </button>
             </div>
@@ -467,13 +468,13 @@ function Products() {
 
       {/* Live Camera Overlay */}
       {showCamera && (
-        <div style={styles.overlay}>
-          <div style={styles.cameraBox}>
-            <video ref={videoRef} autoPlay playsInline style={styles.cameraVideo} />
+        <div className="modal-overlay">
+          <div className="camera-box">
+            <video ref={videoRef} autoPlay playsInline className="camera-video" />
             <canvas ref={canvasRef} style={{ display: "none" }} />
-            <div style={styles.modalActions}>
-              <button onClick={closeCamera} style={styles.cancelBtn}>Cancel</button>
-              <button onClick={capturePhoto} style={styles.saveBtn}>Capture</button>
+            <div className="modal-actions">
+              <button onClick={closeCamera} className="cancel-btn">Cancel</button>
+              <button onClick={capturePhoto} className="save-btn">Capture</button>
             </div>
           </div>
         </div>
@@ -482,128 +483,5 @@ function Products() {
     </div>
   );
 }
-
-const styles = {
-  page:             { padding: "24px", backgroundColor: "#f8fafc", minHeight: "100vh" },
-  header:           { display: "flex", justifyContent: "space-between",
-                      alignItems: "flex-start", marginBottom: "24px" },
-  title:            { margin: 0, fontSize: "22px", fontWeight: "700", color: "#1e293b" },
-  subtitle:         { margin: "4px 0 0", fontSize: "13px", color: "#64748b" },
-  addBtn:           { padding: "10px 20px", backgroundColor: "#2563eb", color: "white",
-                      border: "none", borderRadius: "8px", cursor: "pointer",
-                      fontSize: "14px", fontWeight: "600" },
-  cardGrid:         { display: "flex", flexWrap: "nowrap", gap: "14px", marginBottom: "28px",
-                      overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch",
-                      paddingBottom: "8px", minWidth: 0 },
-  catCard:          { width: "130px", padding: "16px 12px", backgroundColor: "white",
-                      borderRadius: "12px", border: "2px solid #e2e8f0",
-                      cursor: "pointer", textAlign: "center",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.06)", position: "relative" },
-  catCardActive:    { border: "2px solid #2563eb", backgroundColor: "#eff6ff",
-                      boxShadow: "0 4px 12px rgba(37,99,235,0.15)" },
-  catIcon:          { width: "42px", height: "42px", borderRadius: "50%",
-                      backgroundColor: "#1e3a5f", color: "white",
-                      fontSize: "18px", fontWeight: "700",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      margin: "0 auto 8px" },
-  catCardName:      { fontSize: "13px", fontWeight: "700", color: "#1e293b", marginBottom: "3px" },
-  catCardCount:     { fontSize: "11px", color: "#64748b" },
-  selectedBadge:    { position: "absolute", top: "-8px", right: "-8px",
-                      backgroundColor: "#2563eb", color: "white",
-                      fontSize: "11px", fontWeight: "700",
-                      padding: "2px 8px", borderRadius: "20px" },
-  productSection:   { backgroundColor: "white", borderRadius: "12px",
-                      boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden" },
-  sectionHeader:    { display: "flex", justifyContent: "space-between",
-                      alignItems: "center", padding: "14px 20px",
-                      backgroundColor: "#1e3a5f" },
-  sectionLeft:      { display: "flex", alignItems: "center", gap: "10px" },
-  sectionTitle:     { fontSize: "16px", fontWeight: "700", color: "white" },
-  sectionCount:     { fontSize: "12px", color: "#93c5fd",
-                      backgroundColor: "rgba(255,255,255,0.15)",
-                      padding: "2px 10px", borderRadius: "20px" },
-  searchInput:      { padding: "8px 12px", border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "6px", fontSize: "13px", width: "200px",
-                      backgroundColor: "rgba(255,255,255,0.1)", color: "white", outline: "none" },
-  productGrid:      { display: "flex", flexWrap: "wrap", gap: "16px", padding: "20px",
-                      overflowY: "auto", maxHeight: "calc(100vh - 420px)" },
-  productCard:      { width: "170px", backgroundColor: "white", border: "1px solid #e2e8f0",
-                      borderRadius: "12px", overflow: "hidden",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-                      display: "flex", flexDirection: "column" },
-  imageBox:         { width: "100%", height: "120px", overflow: "hidden",
-                      backgroundColor: "#f1f5f9" },
-  productImg:       { width: "100%", height: "100%", objectFit: "cover" },
-  imagePlaceholder: { width: "100%", height: "100%", display: "flex",
-                      alignItems: "center", justifyContent: "center",
-                      fontSize: "36px", fontWeight: "700", color: "#94a3b8",
-                      backgroundColor: "#f1f5f9" },
-  productInfo:      { padding: "10px 12px 6px" },
-  productName:      { fontSize: "13px", fontWeight: "700", color: "#1e293b", marginBottom: "2px" },
-  productUnit:      { fontSize: "11px", color: "#64748b", marginBottom: "4px" },
-  productPrice:     { fontSize: "15px", fontWeight: "700", color: "#15803d" },
-  qtyRow:           { padding: "6px 12px" },
-  addToCartBtn:     { width: "100%", padding: "7px 0", backgroundColor: "#2563eb",
-                      color: "white", border: "none", borderRadius: "6px",
-                      cursor: "pointer", fontSize: "13px", fontWeight: "600" },
-  qtyControls:      { display: "flex", alignItems: "center", justifyContent: "space-between",
-                      backgroundColor: "#2563eb", borderRadius: "6px", padding: "4px 10px" },
-  qtyBtn:           { background: "none", border: "none", color: "white",
-                      fontSize: "18px", fontWeight: "700", cursor: "pointer", lineHeight: 1 },
-  qtyNumber:        { color: "white", fontWeight: "700", fontSize: "15px",
-                      minWidth: "20px", textAlign: "center" },
-  actionRow:        { display: "flex", gap: "6px", padding: "6px 12px 12px" },
-  editBtn:          { flex: 1, padding: "5px 0", backgroundColor: "#dbeafe",
-                      color: "#1d4ed8", border: "none", borderRadius: "6px",
-                      cursor: "pointer", fontSize: "12px", fontWeight: "600" },
-  deleteBtn:        { flex: 1, padding: "5px 0", backgroundColor: "#fee2e2",
-                      color: "#dc2626", border: "none", borderRadius: "6px",
-                      cursor: "pointer", fontSize: "12px", fontWeight: "600" },
-  emptyMsg:         { padding: "40px", color: "#9ca3af", fontSize: "14px",
-                      textAlign: "center", width: "100%" },
-  overlay:          { position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)",
-                      display: "flex", alignItems: "center",
-                      justifyContent: "center", zIndex: 1000 },
-  modal:            { backgroundColor: "white", borderRadius: "12px", padding: "28px",
-                      width: "100%", maxWidth: "440px",
-                      boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
-                      maxHeight: "90vh", overflowY: "auto" },
-  modalTitle:       { margin: "0 0 16px", fontSize: "18px",
-                      fontWeight: "700", color: "#1e293b" },
-  modalImageBox:    { width: "100%", height: "140px", backgroundColor: "#f1f5f9",
-                      borderRadius: "8px", marginBottom: "10px", overflow: "hidden",
-                      display: "flex", alignItems: "center", justifyContent: "center" },
-  modalImg:         { width: "100%", height: "100%", objectFit: "cover" },
-  imgPlaceholderText: { color: "#94a3b8", fontSize: "12px",
-                        textAlign: "center", padding: "0 20px" },
-  fileRow:          { display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" },
-  fileBtn:          { padding: "8px 14px", backgroundColor: "#dbeafe", color: "#1d4ed8",
-                      borderRadius: "6px", cursor: "pointer", fontSize: "12.5px",
-                      fontWeight: "600", textAlign: "center", border: "none" },
-  removeImgBtn:     { padding: "8px 14px", backgroundColor: "#fee2e2", color: "#dc2626",
-                      border: "none", borderRadius: "6px", cursor: "pointer",
-                      fontSize: "12.5px", fontWeight: "600" },
-  cameraErrorText:  { color: "#dc2626", fontSize: "12px", marginBottom: "12px" },
-  cameraBox:        { backgroundColor: "white", borderRadius: "12px", padding: "20px",
-                      width: "100%", maxWidth: "440px",
-                      boxShadow: "0 10px 40px rgba(0,0,0,0.15)" },
-  cameraVideo:      { width: "100%", borderRadius: "8px", backgroundColor: "#000" },
-  label:            { display: "block", fontSize: "13px", fontWeight: "600",
-                      color: "#374151", marginBottom: "6px" },
-  input:            { width: "100%", padding: "10px 12px", border: "1px solid #cbd5e1",
-                      borderRadius: "8px", fontSize: "14px", marginBottom: "14px",
-                      boxSizing: "border-box", outline: "none" },
-  modalActions:     { display: "flex", gap: "10px",
-                      justifyContent: "flex-end", marginTop: "6px" },
-  cancelBtn:        { padding: "9px 18px", backgroundColor: "#f1f5f9",
-                      color: "#374151", border: "none", borderRadius: "8px",
-                      cursor: "pointer", fontSize: "14px" },
-  saveBtn:          { padding: "9px 20px", backgroundColor: "#2563eb", color: "white",
-                      border: "none", borderRadius: "8px", cursor: "pointer",
-                      fontSize: "14px", fontWeight: "600" },
-  backBtn:          { padding: "10px 18px", backgroundColor: "#e2e8f0", color: "#1f2937",
-                      border: "none", borderRadius: "8px", cursor: "pointer",
-                      fontSize: "14px", fontWeight: "700" },
-};
 
 export default Products;

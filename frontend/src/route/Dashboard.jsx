@@ -73,7 +73,6 @@ function Dashboard() {
       <main className="dashboard-shell">
         <section className="dashboard-hero">
           <div>
-            <p className="eyebrow">Smart Shop</p>
             <h1>Dashboard</h1>
             <p>Fast billing, clean customer tracking, and live shop totals.</p>
           </div>

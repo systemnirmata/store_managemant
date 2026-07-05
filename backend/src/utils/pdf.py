@@ -4,34 +4,26 @@ from reportlab.lib.units import mm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
     SimpleDocTemplate, Table, TableStyle,
-    Paragraph, Spacer, Image
+    Paragraph, Spacer
 )
 from reportlab.platypus.flowables import KeepTogether
-import os
-import io  # ← key change
+import io
 
-STORE_NAME    = "GANGADHAR PROVISION STORE"
-STORE_ADDRESS = """1, Ravikunj Flat, Arunodaya Soc.,
+STORE_NAME    = "SYSTEM NIRMATA"
+STORE_ADDRESS = ""   # fill in when available
+STORE_PHONE   = ""   # fill in when available
+STORE_GSTIN   = ""   # fill in when available (leave blank if not GST registered)
 
-B.M.C. Gas Supply Road, Alkapuri,
-
-Vadodara - 7"""
-STORE_PHONE   = "Mobile: 95860 52965"
-STORE_GSTIN   = "GSTIN: 24ADHPP9881D1Z9"
-LOGO_PATH     = "static/logo.png"
-
-DARK_BLUE  = colors.HexColor("#1e3a5f")
-GOLD       = colors.HexColor("#b8860b")
-LIGHT_GRAY = colors.HexColor("#f8fafc")
-GREEN      = colors.HexColor("#15803d")
+BLACK      = colors.black
 LINE_COLOR = colors.HexColor("#e2e8f0")
+LIGHT_GRAY = colors.HexColor("#f8fafc")
 WHITE      = colors.white
 
-def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns bytes now
-    buffer = io.BytesIO()  # ← memory buffer, no file saved
+def generate_bill_pdf(bill_data: dict, items: list) -> bytes:
+    buffer = io.BytesIO()
 
     doc = SimpleDocTemplate(
-        buffer,            # ← buffer instead of filename
+        buffer,
         pagesize=A4,
         rightMargin=15 * mm,
         leftMargin=15 * mm,
@@ -44,30 +36,23 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
 
     # ── HEADER ───────────────────────────────────────────────
     store_name_style = ParagraphStyle("sn",
-        fontName="Helvetica-Bold", fontSize=15,
-        textColor=WHITE, spaceAfter=2)
+        fontName="Helvetica-Bold", fontSize=16,
+        textColor=BLACK, spaceAfter=2)
     store_sub_style = ParagraphStyle("ss",
         fontName="Helvetica", fontSize=8,
-        textColor=colors.HexColor("#93c5fd"), spaceAfter=1)
+        textColor=colors.HexColor("#6B7280"), spaceAfter=1)
     inv_label_style = ParagraphStyle("il",
         fontName="Helvetica-Bold", fontSize=12,
-        textColor=GOLD, alignment=2)
+        textColor=BLACK, alignment=2)
     inv_val_style = ParagraphStyle("iv",
         fontName="Helvetica", fontSize=8,
-        textColor=WHITE, alignment=2, spaceAfter=1)
+        textColor=BLACK, alignment=2, spaceAfter=1)
 
-    logo_cell = ""
-    if os.path.exists(LOGO_PATH):
-        try:
-            logo_cell = Image(LOGO_PATH, width=22*mm, height=22*mm)
-        except Exception:
-            logo_cell = Paragraph("", styles["Normal"])
+    store_lines = [Paragraph(STORE_NAME, store_name_style)]
+    contact_bits = " | ".join(filter(None, [STORE_ADDRESS, STORE_PHONE, STORE_GSTIN]))
+    if contact_bits:
+        store_lines.append(Paragraph(contact_bits, store_sub_style))
 
-    store_cell = [
-        Paragraph(STORE_NAME, store_name_style),
-        Paragraph(STORE_ADDRESS, store_sub_style),
-        Paragraph(f"{STORE_PHONE}   |   {STORE_GSTIN}", store_sub_style),
-    ]
     inv_cell = [
         Paragraph("INVOICE", inv_label_style),
         Paragraph(f"Invoice No : INV-{str(bill_data['bid']).zfill(4)}", inv_val_style),
@@ -75,38 +60,37 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
     ]
 
     header_table = Table(
-        [[logo_cell, store_cell, inv_cell]],
-        colWidths=[26*mm, 110*mm, 49*mm]
+        [[store_lines, inv_cell]],
+        colWidths=[110*mm, 75*mm]
     )
     header_table.setStyle(TableStyle([
-        ("BACKGROUND",    (0, 0), (-1, -1), DARK_BLUE),
         ("VALIGN",        (0, 0), (-1, -1), "MIDDLE"),
-        ("LEFTPADDING",   (0, 0), (-1, -1), 4),
-        ("RIGHTPADDING",  (0, 0), (-1, -1), 4),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 0),
         ("TOPPADDING",    (0, 0), (-1, -1), 6),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+        ("LINEBELOW",     (0, 0), (-1, -1), 1, BLACK),
     ]))
     story.append(header_table)
     story.append(Spacer(1, 4*mm))
 
     # ── CUSTOMER INFO ─────────────────────────────────────────
-    pay_type    = bill_data.get("payment_type", "Cash")
-    badge_color = GREEN if pay_type == "Cash" else GOLD
+    pay_type = bill_data.get("payment_type", "Cash")
 
     label_style = ParagraphStyle("lbl",
-        fontName="Helvetica-Bold", fontSize=8, textColor=DARK_BLUE)
+        fontName="Helvetica-Bold", fontSize=8, textColor=BLACK)
     value_style = ParagraphStyle("val",
         fontName="Helvetica", fontSize=8, textColor=colors.black)
     badge_style = ParagraphStyle("badge",
         fontName="Helvetica-Bold", fontSize=8,
-        textColor=WHITE, alignment=1)
+        textColor=BLACK, alignment=1)
 
     badge_tbl = Table(
         [[Paragraph(pay_type.upper(), badge_style)]],
         colWidths=[32*mm]
     )
     badge_tbl.setStyle(TableStyle([
-        ("BACKGROUND",    (0,0), (-1,-1), badge_color),
+        ("BOX",           (0,0), (-1,-1), 0.75, BLACK),
         ("TOPPADDING",    (0,0), (-1,-1), 4),
         ("BOTTOMPADDING", (0,0), (-1,-1), 4),
     ]))
@@ -121,12 +105,12 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
         ]
     ], colWidths=[32*mm, 55*mm, 18*mm, 40*mm, 34*mm])
     cust_table.setStyle(TableStyle([
-        ("BACKGROUND",    (0,0), (-1,-1), LIGHT_GRAY),
         ("VALIGN",        (0,0), (-1,-1), "MIDDLE"),
         ("TOPPADDING",    (0,0), (-1,-1), 5),
         ("BOTTOMPADDING", (0,0), (-1,-1), 5),
-        ("LEFTPADDING",   (0,0), (-1,-1), 4),
+        ("LEFTPADDING",   (0,0), (-1,-1), 0),
         ("RIGHTPADDING",  (0,0), (-1,-1), 4),
+        ("LINEBELOW",     (0,0), (-1,-1), 0.5, LINE_COLOR),
     ]))
     story.append(cust_table)
     story.append(Spacer(1, 4*mm))
@@ -137,16 +121,16 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
 
     table_data = [[
         Paragraph("<b>Item Name</b>", ParagraphStyle("th",
-            fontName="Helvetica-Bold", fontSize=8, textColor=WHITE)),
+            fontName="Helvetica-Bold", fontSize=8, textColor=BLACK)),
         Paragraph("<b>Qty</b>", ParagraphStyle("th2",
             fontName="Helvetica-Bold", fontSize=8,
-            textColor=WHITE, alignment=1)),
+            textColor=BLACK, alignment=1)),
         Paragraph("<b>Rate</b>", ParagraphStyle("th3",
             fontName="Helvetica-Bold", fontSize=8,
-            textColor=WHITE, alignment=2)),
+            textColor=BLACK, alignment=2)),
         Paragraph("<b>Amount</b>", ParagraphStyle("th4",
             fontName="Helvetica-Bold", fontSize=8,
-            textColor=WHITE, alignment=2)),
+            textColor=BLACK, alignment=2)),
     ]]
 
     for idx, item in enumerate(items):
@@ -166,15 +150,14 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
         repeatRows=1
     )
     items_table.setStyle(TableStyle([
-        ("BACKGROUND",     (0, 0), (-1, 0),  DARK_BLUE),
+        ("LINEBELOW",      (0, 0), (-1, 0),  1, BLACK),
         ("TOPPADDING",     (0, 0), (-1, 0),  6),
         ("BOTTOMPADDING",  (0, 0), (-1, 0),  6),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [WHITE, LIGHT_GRAY]),
         ("TOPPADDING",     (0, 1), (-1, -1), 5),
         ("BOTTOMPADDING",  (0, 1), (-1, -1), 5),
         ("LEFTPADDING",    (0, 0), (-1, -1), 4),
         ("RIGHTPADDING",   (0, 0), (-1, -1), 4),
-        ("LINEBELOW",      (0, 0), (-1, -1), 0.3, LINE_COLOR),
+        ("LINEBELOW",      (0, 1), (-1, -1), 0.3, LINE_COLOR),
     ]))
     story.append(items_table)
     story.append(Spacer(1, 4*mm))
@@ -186,10 +169,10 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
         fontName="Helvetica", fontSize=9,
         textColor=colors.black, alignment=2)
     grand_label = ParagraphStyle("gl",
-        fontName="Helvetica-Bold", fontSize=11, textColor=WHITE)
+        fontName="Helvetica-Bold", fontSize=11, textColor=BLACK)
     grand_value = ParagraphStyle("gv",
         fontName="Helvetica-Bold", fontSize=11,
-        textColor=WHITE, alignment=2)
+        textColor=BLACK, alignment=2)
 
     totals_table = Table([
         [Paragraph("Subtotal",    total_style_label),
@@ -200,66 +183,39 @@ def generate_bill_pdf(bill_data: dict, items: list) -> bytes:  # ← returns byt
          Paragraph(f"Rs. {bill_data['total_amount']}", grand_value)],
     ], colWidths=[100*mm, 85*mm])
     totals_table.setStyle(TableStyle([
-        ("BACKGROUND",    (0, 0), (-1, 1), LIGHT_GRAY),
-        ("BACKGROUND",    (0, 2), (-1, 2), DARK_BLUE),
         ("TOPPADDING",    (0, 0), (-1, -1), 6),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
         ("LEFTPADDING",   (0, 0), (-1, -1), 6),
         ("RIGHTPADDING",  (0, 0), (-1, -1), 6),
-        ("LINEABOVE",     (0, 2), (-1, 2),  1.5, GREEN),
+        ("LINEABOVE",     (0, 2), (-1, 2),  1, BLACK),
         ("LINEBELOW",     (0, 0), (-1, 1),  0.3, LINE_COLOR),
     ]))
     story.append(KeepTogether(totals_table))
-    story.append(Spacer(1, 6*mm))
+    story.append(Spacer(1, 10*mm))
 
-# ── SIGNATURE + FOOTER ───────────────────────────────────
-    SIGN_PATH = "static/sign.png"
-
-    sign_style = ParagraphStyle("ss",
-        fontName="Helvetica", fontSize=8,
-        textColor=colors.black, alignment=1)
+    # ── SIGNATURE + FOOTER ───────────────────────────────────
     sign_label = ParagraphStyle("sl",
         fontName="Helvetica-Bold", fontSize=8,
-        textColor=DARK_BLUE, alignment=1)
-
-    # Build signature cell
-    if os.path.exists(SIGN_PATH):
-        try:
-            sign_img = Image(SIGN_PATH, width=35*mm, height=18*mm)
-        except Exception:
-            sign_img = Paragraph("", sign_style)
-    else:
-        sign_img = Paragraph("", sign_style)
+        textColor=BLACK, alignment=1)
 
     sign_table = Table([
-        [Paragraph("", sign_style),
-         sign_img],
-        [Paragraph("", sign_style),
-         Paragraph("Authorised Signatory", sign_label)],
+        [Paragraph("", sign_label), Paragraph("", sign_label)],
+        [Paragraph("", sign_label), Paragraph("Authorised Signatory", sign_label)],
     ], colWidths=[140*mm, 45*mm])
     sign_table.setStyle(TableStyle([
         ("ALIGN",         (1,0), (1,-1), "CENTER"),
         ("TOPPADDING",    (0,0), (-1,-1), 3),
         ("BOTTOMPADDING", (0,0), (-1,-1), 3),
-        ("LINEABOVE",     (1,1), (1,1), 0.5, DARK_BLUE),
+        ("LINEABOVE",     (1,1), (1,1), 0.5, BLACK),
     ]))
-    story.append(Spacer(1, 4*mm))
     story.append(sign_table)
-    story.append(Spacer(1, 4*mm))
+    story.append(Spacer(1, 6*mm))
 
     footer_style = ParagraphStyle("ft",
-        fontName="Helvetica-Bold", fontSize=10,
-        textColor=WHITE, alignment=1)
+        fontName="Helvetica", fontSize=9,
+        textColor=colors.HexColor("#6B7280"), alignment=1)
 
-    footer_table = Table([
-        [Paragraph("Thank You! Visit Again", footer_style)],
-    ], colWidths=[185*mm])
-    footer_table.setStyle(TableStyle([
-        ("BACKGROUND",    (0,0), (-1,-1), DARK_BLUE),
-        ("TOPPADDING",    (0,0), (-1,-1), 6),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 6),
-    ]))
-    story.append(KeepTogether(footer_table))
+    story.append(Paragraph("Thank You! Visit Again", footer_style))
 
     doc.build(story)
     buffer.seek(0)

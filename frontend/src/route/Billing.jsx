@@ -6,8 +6,50 @@ import Header from "../components/Hader";
 import Footer from "../components/Footer";
 import "../style/billing.css";
 import { printBill } from "../utils/printer";
-import {  reconnectPrinter } from "../utils/printer";
+import { reconnectPrinter } from "../utils/printer";
 
+/* ── tiny presentational icons (no new dependency) ── */
+const IconReceipt = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 1z" />
+    <path d="M8 7h8M8 11h8M8 15h5" />
+  </svg>
+);
+const IconBack = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
+const IconRefresh = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M21 3v5h-5" />
+    <path d="M21 12a9 9 0 0 1-15 6.7L3 16" /><path d="M8 16H3v5" />
+  </svg>
+);
+const IconSearch = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+  </svg>
+);
+const IconCheckCircle = () => (
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m22 4-10 10.01-3-3" />
+  </svg>
+);
+const IconWhatsApp = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.24-1.11a7.9 7.9 0 0 0 3.8.97h.01a7.94 7.94 0 0 0 5.55-13.54ZM12.05 18.4a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.5.66.67-2.44-.16-.25a6.6 6.6 0 1 1 12.26-3.5 6.62 6.62 0 0 1-6.67 6.6Zm3.63-4.95c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.51.64-.63.77-.11.13-.23.15-.43.05-.2-.1-.83-.31-1.58-.98-.58-.52-.98-1.16-1.09-1.36-.11-.2-.01-.3.09-.4.09-.1.2-.23.3-.34.1-.12.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.48-.16-.38-.33-.33-.45-.34h-.38c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.67s.72 1.94.82 2.07c.1.13 1.4 2.15 3.4 3.01.48.2.85.33 1.14.42.48.15.91.13 1.26.08.38-.06 1.17-.48 1.34-.94.16-.46.16-.86.11-.94-.05-.09-.18-.14-.38-.24Z" /></svg>
+);
+const IconDownload = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5" /><path d="M12 15V3" />
+  </svg>
+);
+const IconPrinter = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 9V2h12v7" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+    <path d="M6 14h12v8H6z" />
+  </svg>
+);
 
 function Billing() {
   const navigate = useNavigate();
@@ -27,16 +69,19 @@ function Billing() {
   const [billDone, setBillDone] = useState(null);
   const [cashMethod, setCashMethod] = useState("Cash");
 
-useEffect(() => {
+  // Cosmetic-only: spin animation on the refresh icon. Does not change data flow.
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
     // Auto reconnect printer on page load
     reconnectPrinter()
-        .then(connected => {
-            if (connected) {
-                console.log("Printer ready!");
-            }
-        })
-        .catch(() => {});
-}, []);
+      .then(connected => {
+        if (connected) {
+          console.log("Printer ready!");
+        }
+      })
+      .catch(() => {});
+  }, []);
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
@@ -55,6 +100,12 @@ useEffect(() => {
       setNotice("Failed to load data");
     } finally { setLoading(false); }
   }
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadData();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   const getProductsByCategory = (cid) =>
     products.filter(p => p.cid === cid);
@@ -294,25 +345,54 @@ useEffect(() => {
   };
   // ── JSX ───────────────────────────────────────────────────
   return (
-    <div className="billing-page">
+    <div className="bp-page">
       <Header />
-      <main className="billing-shell">
+      <main className="bp-shell">
 
-        {/* Top Bar */}
-        <section className="billing-topbar">
-          <div>
-            <button className="ghost-btn" onClick={() => navigate("/Dashboard")}>
-              Back
-            </button>
-            <h1>Billing</h1>
-            <p>Select products, choose payment type, then generate the bill.</p>
+        <div className="bp-breadcrumb">
+          <button onClick={() => navigate("/Dashboard")}>Dashboard</button>
+          <span>/</span>
+          <span className="bp-crumb-current">Billing</span>
+        </div>
+
+        {/* Sticky Top Bar */}
+        <section className="bp-topbar">
+          <div className="bp-topbar-left">
+            <div className="bp-icon-badge"><IconReceipt /></div>
+            <div>
+              <button className="bp-back-btn" onClick={() => navigate("/Dashboard")}>
+                <IconBack /> Back
+              </button>
+              <h1 className="bp-title">Billing</h1>
+              <p className="bp-subtitle">Select products, choose a payment type, then generate the bill.</p>
+            </div>
           </div>
-          <div className="billing-summary">
-            <span>{selectedItems.length} items</span>
-            <strong>Rs {totalAmount.toFixed(2)}</strong>
+
+          <div className="bp-summary">
+            <div className="bp-summary-stat">
+              <span>Items</span>
+              <strong>{selectedItems.length}</strong>
+            </div>
+            <div className="bp-summary-stat">
+              <span>Total</span>
+              <strong>Rs {totalAmount.toFixed(2)}</strong>
+            </div>
+            <button
+              className={`bp-icon-btn ${isRefreshing ? "bp-spin" : ""}`}
+              onClick={handleRefresh}
+              title="Refresh"
+              aria-label="Refresh"
+              style={{
+                width: 40, height: 40, display: "flex", alignItems: "center",
+                justifyContent: "center", background: "white", border: "1px solid var(--bp-green-soft)",
+                borderRadius: 10, cursor: "pointer", color: "var(--bp-green)"
+              }}
+            >
+              <IconRefresh />
+            </button>
             {paymentType === "Cash" && (
               <button
-                className="generate-btn"
+                className="bp-generate-btn"
                 disabled={!canGenerate}
                 onClick={generateBill}
               >
@@ -322,27 +402,21 @@ useEffect(() => {
           </div>
         </section>
 
-        {notice && <div className="billing-notice">{notice}</div>}
+        {notice && <div className="bp-notice">⚠️ {notice}</div>}
 
-        <section className="billing-grid">
+        <section className="bp-grid">
 
           {/* LEFT PANEL */}
-          <aside className="billing-panel">
+          <aside className="bp-panel">
 
             {/* Payment Type */}
             <label>Payment Type</label>
-            <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+            <div className="bp-segmented">
               {["Cash", "Monthly Account"].map(type => (
                 <button
                   key={type}
                   onClick={() => setPaymentType(type)}
-                  style={{
-                    flex: 1, padding: "9px",
-                    backgroundColor: paymentType === type ? "#1e3a5f" : "#f1f5f9",
-                    color: paymentType === type ? "white" : "#374151",
-                    border: "none", borderRadius: "8px",
-                    cursor: "pointer", fontWeight: "600", fontSize: "13px"
-                  }}
+                  className={paymentType === type ? "active" : ""}
                 >
                   {type}
                 </button>
@@ -359,44 +433,26 @@ useEffect(() => {
                   value={cashPhone}
                   maxLength={10}
                   onChange={e => setCashPhone(e.target.value.replace(/\D/g, ""))}
-                  style={{
-                    width: "100%", padding: "9px 12px",
-                    border: "1px solid #cbd5e1", borderRadius: "8px",
-                    fontSize: "14px", marginBottom: "8px",
-                    boxSizing: "border-box", outline: "none"
-                  }}
+                  className="bp-input"
                 />
 
-                {/* ADD THIS — Cash or UPI selection */}
-                <label style={{
-                  fontSize: "13px", fontWeight: "600",
-                  color: "#374151", marginBottom: "6px", display: "block"
-                }}>
-                  Payment Method
-                </label>
-                <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+                <label>Payment Method</label>
+                <div className="bp-segmented" style={{ background: "var(--bp-green-xlight)" }}>
                   {["Cash", "UPI"].map(method => (
                     <button
                       key={method}
                       onClick={() => setCashMethod(method)}
-                      style={{
-                        flex: 1, padding: "8px",
-                        backgroundColor: cashMethod === method ? "#15803d" : "#f1f5f9",
-                        color: cashMethod === method ? "white" : "#374151",
-                        border: "none", borderRadius: "8px",
-                        cursor: "pointer", fontWeight: "600", fontSize: "13px"
-                      }}
+                      className={cashMethod === method ? "active" : ""}
                     >
                       {method === "Cash" ? "💵 Cash" : "📱 UPI"}
                     </button>
                   ))}
                 </div>
 
-                <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "14px" }}>
-                  Bill will be sent to this WhatsApp number
-                </p>
+                <p className="bp-hint">Bill will be sent to this WhatsApp number</p>
               </>
             )}
+
             {/* Monthly Account */}
             {paymentType === "Monthly Account" && (
               <>
@@ -404,12 +460,7 @@ useEffect(() => {
                 <select
                   value={selectedCustomer}
                   onChange={e => setSelectedCustomer(e.target.value)}
-                  style={{
-                    width: "100%", padding: "9px 12px",
-                    border: "1px solid #cbd5e1", borderRadius: "8px",
-                    fontSize: "14px", marginBottom: "10px",
-                    boxSizing: "border-box", outline: "none"
-                  }}
+                  className="bp-input"
                 >
                   <option value="">-- Select Customer --</option>
                   {customers
@@ -421,47 +472,36 @@ useEffect(() => {
                     ))}
                 </select>
 
-                {/* ADD TO ACCOUNT BUTTON */}
                 <button
                   onClick={addToAccount}
                   disabled={!canAddToAccount}
-                  style={{
-                    width: "100%", padding: "11px 0",
-                    backgroundColor: canAddToAccount ? "#b45309" : "#d1d5db",
-                    color: "white", border: "none", borderRadius: "8px",
-                    cursor: canAddToAccount ? "pointer" : "not-allowed",
-                    fontWeight: "700", fontSize: "14px", marginBottom: "10px"
-                  }}
+                  className="bp-account-btn"
                 >
                   {saving ? "Adding..." : "➕ Add to Monthly Account"}
                 </button>
 
-                <p style={{
-                  fontSize: "12px", color: "#b45309",
-                  backgroundColor: "#fef3c7", padding: "8px 10px",
-                  borderRadius: "6px", marginBottom: "14px"
-                }}>
+                <p className="bp-hint-warning">
                   ✓ Bill will be added to customer's monthly account
                 </p>
               </>
             )}
 
             {/* Cart */}
-            <div className="receipt-preview">
-              <div className="receipt-head">
+            <div className="bp-receipt">
+              <div className="bp-receipt-head">
                 <span>Current Bill</span>
                 <strong>Rs {totalAmount.toFixed(2)}</strong>
               </div>
               {selectedItems.length === 0 ? (
-                <p className="muted">No products selected yet.</p>
+                <p className="bp-receipt-empty">No products selected yet.</p>
               ) : (
                 selectedItems.map(item => (
-                  <div className="receipt-row" key={item.pid}>
+                  <div className="bp-receipt-row" key={item.pid}>
                     <div>
-                      <strong>{item.product_name}</strong>
-                      <span>{item.quantity} x Rs {Number(item.price).toFixed(2)}</span>
+                      <span className="bp-receipt-row-name">{item.product_name}</span>
+                      <span className="bp-receipt-row-meta">{item.quantity} x Rs {Number(item.price).toFixed(2)}</span>
                     </div>
-                    <b>Rs {item.subtotal.toFixed(2)}</b>
+                    <span className="bp-receipt-row-amt">Rs {item.subtotal.toFixed(2)}</span>
                   </div>
                 ))
               )}
@@ -469,14 +509,10 @@ useEffect(() => {
           </aside>
 
           {/* RIGHT — Products */}
-          <section className="product-picker">
+          <section className="bp-picker">
 
             {/* Category Cards */}
-            <div style={{
-              display: "flex", flexWrap: "nowrap",
-              gap: "10px", marginBottom: "18px",
-              overflowX: "auto", paddingBottom: "6px"
-            }}>
+            <div className="bp-cat-row">
               {categories.map(cat => {
                 const isActive = activeCategory === cat.cid;
                 const selected = getProductsByCategory(cat.cid)
@@ -485,39 +521,12 @@ useEffect(() => {
                   <div
                     key={cat.cid}
                     onClick={() => setActiveCategory(isActive ? null : cat.cid)}
-                    style={{
-                      padding: "10px 16px", borderRadius: "10px",
-                      border: isActive ? "2px solid #1e3a5f" : "2px solid #e2e8f0",
-                      backgroundColor: isActive ? "#eff6ff" : "white",
-                      cursor: "pointer", textAlign: "center",
-                      minWidth: "90px", position: "relative",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.05)"
-                    }}
+                    className={`bp-cat-card ${isActive ? "active" : ""}`}
                   >
-                    <div style={{
-                      width: "36px", height: "36px", borderRadius: "50%",
-                      backgroundColor: "#1e3a5f", color: "white",
-                      fontSize: "16px", fontWeight: "700",
-                      display: "flex", alignItems: "center",
-                      justifyContent: "center", margin: "0 auto 6px"
-                    }}>
-                      {cat.cname.charAt(0).toUpperCase()}
-                    </div>
-                    <div style={{
-                      fontSize: "12px", fontWeight: "700",
-                      color: "#1e293b"
-                    }}>{cat.cname}</div>
-                    <div style={{ fontSize: "10px", color: "#64748b" }}>
-                      {getProductsByCategory(cat.cid).length} items
-                    </div>
-                    {selected > 0 && (
-                      <div style={{
-                        position: "absolute", top: "-7px", right: "-7px",
-                        backgroundColor: "#2563eb", color: "white",
-                        fontSize: "10px", fontWeight: "700",
-                        padding: "2px 7px", borderRadius: "20px"
-                      }}>{selected}</div>
-                    )}
+                    <div className="bp-cat-icon">{cat.cname.charAt(0).toUpperCase()}</div>
+                    <div className="bp-cat-name">{cat.cname}</div>
+                    <div className="bp-cat-count">{getProductsByCategory(cat.cid).length} items</div>
+                    {selected > 0 && <div className="bp-cat-badge">{selected}</div>}
                   </div>
                 );
               })}
@@ -525,63 +534,49 @@ useEffect(() => {
 
             {/* Active Category Products */}
             {activeCategory && activeCat && (
-              <div style={{
-                backgroundColor: "white", borderRadius: "12px",
-                overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.07)",
-                maxHeight: "calc(100vh - 320px)", overflowY: "auto"
-              }}>
-                <div style={{
-                  display: "flex", justifyContent: "space-between",
-                  alignItems: "center", padding: "12px 16px",
-                  backgroundColor: "#1e3a5f"
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{
-                      fontSize: "14px", fontWeight: "700",
-                      color: "white"
-                    }}>{activeCat.cname}</span>
-                    <span style={{
-                      fontSize: "11px", color: "#93c5fd",
-                      backgroundColor: "rgba(255,255,255,0.15)",
-                      padding: "2px 8px", borderRadius: "20px"
-                    }}>
+              <div className="bp-section-card">
+                <div className="bp-section-header">
+                  <div className="bp-section-left">
+                    <span className="bp-section-title">{activeCat.cname}</span>
+                    <span className="bp-section-count">
                       {getProductsByCategory(activeCategory).length} products
                     </span>
                   </div>
-                  <input
-                    type="text"
-                    placeholder={`Search ${activeCat.cname}...`}
-                    value={searches[activeCategory] || ""}
-                    onChange={e => setSearches(prev => ({
-                      ...prev, [activeCategory]: e.target.value
-                    }))}
-                    style={{
-                      padding: "6px 10px",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "6px", fontSize: "12px", width: "160px",
-                      backgroundColor: "rgba(255,255,255,0.1)",
-                      color: "white", outline: "none"
-                    }}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <input
+                      type="text"
+                      placeholder={`Search ${activeCat.cname}...`}
+                      value={searches[activeCategory] || ""}
+                      onChange={e => setSearches(prev => ({
+                        ...prev, [activeCategory]: e.target.value
+                      }))}
+                      className="bp-section-search"
+                    />
+                  </div>
                 </div>
 
                 {loading ? (
-                  <div className="empty-state">Loading...</div>
+                  <div className="bp-skeleton-grid">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div className="bp-skeleton-card" key={i} />
+                    ))}
+                  </div>
+                ) : getFiltered(activeCategory).length === 0 ? (
+                  <div className="bp-empty-state">No products found in this category.</div>
                 ) : (
-                  <div className="billing-product-grid">
+                  <div className="bp-product-grid">
                     {getFiltered(activeCategory).map(product => {
                       const qty = quantities[product.pid] || 0;
                       return (
                         <article
-                          className={`billing-product-card ${qty ? "selected" : ""}`}
+                          className={`bp-product-card ${qty ? "selected" : ""}`}
                           key={product.pid}
                         >
-                          <div className="billing-product-image">
+                          <div className="bp-product-image">
                             {product.image_url ? (
                               <img
                                 src={`${api.defaults.baseURL}${product.image_url}`}
                                 alt={product.product_name}
-                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 onError={(e) => {
                                   e.target.style.display = "none";
                                   e.target.nextSibling.style.display = "flex";
@@ -592,22 +587,22 @@ useEffect(() => {
                               display: product.image_url ? "none" : "flex",
                               width: "100%", height: "100%",
                               alignItems: "center", justifyContent: "center",
-                              fontSize: "28px", fontWeight: "800", color: "#0369a1"
+                              fontSize: "28px", fontWeight: "800", color: "var(--bp-green)"
                             }}>
                               {product.product_name.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                          <div className="billing-product-body">
+                          <div className="bp-product-body">
                             <h3>{product.product_name}</h3>
                             <p>{product.unit || ""}</p>
-                            <strong>Rs {Number(product.price).toFixed(2)}</strong>
+                            <div className="bp-product-price">Rs {Number(product.price).toFixed(2)}</div>
                           </div>
-                          <div className="quantity-control">
+                          <div className="bp-qty-control">
                             <button
                               onClick={() => changeQty(product.pid, qty - 1)}
                               disabled={qty === 0}
-                            >-</button>
-                            <span>{qty}</span>
+                            >−</button>
+                            <span className="bp-qty-value">{qty}</span>
                             <button onClick={() => changeQty(product.pid, qty + 1)}>+</button>
                           </div>
                         </article>
@@ -624,136 +619,74 @@ useEffect(() => {
 
       {/* SUCCESS POPUP */}
       {billDone && (
-        <div style={{
-          position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex", alignItems: "center",
-          justifyContent: "center", zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: "white", borderRadius: "14px",
-            padding: "28px", width: "100%", maxWidth: "400px",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
-            maxHeight: "90vh", overflowY: "auto"
-          }}>
-            <div style={{
-              fontSize: "16px", fontWeight: "700",
-              color: "#15803d", textAlign: "center", marginBottom: "4px"
-            }}>
-              ✓ {billDone.paymentType === "Monthly Account"
-                ? "Added to Monthly Account!" : "Bill Generated Successfully!"}
-            </div>
-            <div style={{
-              fontSize: "13px", color: "#64748b",
-              textAlign: "center", marginBottom: "16px"
-            }}>
-              Bill #{billDone.bid}
+        <div className="bp-modal-overlay">
+          <div className="bp-modal">
+            <div className="bp-modal-success">
+              <div className="bp-check-circle"><IconCheckCircle /></div>
+              <h3>
+                {billDone.paymentType === "Monthly Account"
+                  ? "Added to Monthly Account!" : "Bill Generated Successfully!"}
+              </h3>
+              <p>Bill #{billDone.bid}</p>
             </div>
 
-            {/* Info */}
-            <div style={{
-              backgroundColor: "#f8fafc", borderRadius: "8px",
-              padding: "12px", marginBottom: "12px"
-            }}>
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                fontSize: "13px", paddingBottom: "6px",
-                marginBottom: "6px", borderBottom: "1px solid #e2e8f0"
-              }}>
-                <span>Customer</span>
-                <span style={{ fontWeight: "700" }}>{billDone.cname}</span>
-              </div>
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                fontSize: "13px", paddingBottom: "6px",
-                marginBottom: "6px", borderBottom: "1px solid #e2e8f0"
-              }}>
-                <span>Payment</span>
-                <span style={{
-                  fontWeight: "700",
-                  color: billDone.paymentType === "Monthly Account"
-                    ? "#b45309" : "#15803d"
-                }}>
-                  {billDone.paymentType}
-                </span>
-              </div>
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                fontSize: "13px"
-              }}>
-                <span>Phone</span>
-                <span>{billDone.phone || "—"}</span>
-              </div>
-            </div>
-
-            {/* Items */}
-            <div style={{ marginBottom: "12px" }}>
-              {billDone.items.map((item, i) => (
-                <div key={i} style={{
-                  display: "flex", justifyContent: "space-between",
-                  fontSize: "13px", padding: "4px 0",
-                  borderBottom: "1px solid #f1f5f9"
-                }}>
-                  <span>{item.product_name} x{item.quantity}</span>
-                  <span>₹{item.subtotal.toFixed(2)}</span>
+            <div className="bp-modal-body">
+              {/* Info */}
+              <div className="bp-info-box">
+                <div className="bp-info-row">
+                  <span>Customer</span>
+                  <span>{billDone.cname}</span>
                 </div>
-              ))}
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                fontSize: "14px", fontWeight: "800",
-                paddingTop: "8px", marginTop: "4px",
-                borderTop: "2px solid #e2e8f0"
-              }}>
-                <span>Total</span>
-                <span style={{ color: "#15803d" }}>
-                  ₹{parseFloat(billDone.total_amount).toFixed(2)}
-                </span>
+                <div className="bp-info-row">
+                  <span>Payment</span>
+                  <span className={billDone.paymentType === "Monthly Account" ? "bp-payment-account" : "bp-payment-cash"}>
+                    {billDone.paymentType}
+                  </span>
+                </div>
+                <div className="bp-info-row">
+                  <span>Phone</span>
+                  <span>{billDone.phone || "—"}</span>
+                </div>
               </div>
-            </div>
 
-            {/* Monthly Account Note */}
-            {billDone.paymentType === "Monthly Account" && (
-              <div style={{
-                backgroundColor: "#fef3c7", color: "#b45309",
-                fontSize: "12px", fontWeight: "600",
-                padding: "8px 12px", borderRadius: "6px",
-                marginBottom: "14px", textAlign: "center"
-              }}>
-                ✓ Added to {billDone.cname}'s Monthly Account
+              {/* Items */}
+              <div className="bp-items-list">
+                {billDone.items.map((item, i) => (
+                  <div key={i} className="bp-item-line">
+                    <span>{item.product_name} x{item.quantity}</span>
+                    <b>₹{item.subtotal.toFixed(2)}</b>
+                  </div>
+                ))}
+                <div className="bp-total-line">
+                  <span>Total</span>
+                  <strong>₹{parseFloat(billDone.total_amount).toFixed(2)}</strong>
+                </div>
               </div>
-            )}
+
+              {/* Monthly Account Note */}
+              {billDone.paymentType === "Monthly Account" && (
+                <div className="bp-account-note">
+                  ✓ Added to {billDone.cname}'s Monthly Account
+                </div>
+              )}
+            </div>
 
             {/* 3 Share Buttons */}
-            {/* Replace your 3 bottom buttons with this */}
-            <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-              <button onClick={handleWhatsApp} style={{
-                flex: 1, padding: "10px 0", backgroundColor: "#16a34a",
-                color: "white", border: "none", borderRadius: "8px",
-                cursor: "pointer", fontSize: "13px", fontWeight: "700"
-              }}>📱 WhatsApp</button>
-
-              <button onClick={handleDownloadPDF} style={{
-                flex: 1, padding: "10px 0", backgroundColor: "#dc2626",
-                color: "white", border: "none", borderRadius: "8px",
-                cursor: "pointer", fontSize: "13px", fontWeight: "700"
-              }}>⬇ PDF</button>
-
-              <button onClick={handlePrint} disabled={printing} style={{
-                flex: 1, padding: "10px 0",
-                backgroundColor: printing ? "#d1d5db" : "#0369a1",
-                color: "white", border: "none", borderRadius: "8px",
-                cursor: printing ? "not-allowed" : "pointer",
-                fontSize: "13px", fontWeight: "700"
-              }}>
-                {printing ? "Printing..." : "🖨️ Print"}
+            <div className="bp-share-row">
+              <button onClick={handleWhatsApp} className="bp-share-btn whatsapp">
+                <IconWhatsApp /> WhatsApp
+              </button>
+              <button onClick={handleDownloadPDF} className="bp-share-btn pdf">
+                <IconDownload /> PDF
+              </button>
+              <button onClick={handlePrint} disabled={printing} className="bp-share-btn print">
+                <IconPrinter /> {printing ? "Printing..." : "Print"}
               </button>
             </div>
 
-            <button onClick={() => setBillDone(null)} style={{
-              width: "100%", padding: "11px 0",
-              backgroundColor: "#1e3a5f", color: "white",
-              border: "none", borderRadius: "8px",
-              cursor: "pointer", fontSize: "14px", fontWeight: "700"
-            }}>+ New Bill</button>
+            <button onClick={() => setBillDone(null)} className="bp-newbill-btn">
+              + New Bill
+            </button>
           </div>
         </div>
       )}

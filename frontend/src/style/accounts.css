@@ -1,10 +1,21 @@
 /* ═══════════════════════════════════════════════
-   ACCOUNTS PAGE — Full Responsive CSS
+   ACCOUNTS PAGE — Premium Green & White Theme
    Gangadhar Provision Store
 ═══════════════════════════════════════════════ */
 
-
-/* ── Reset & Base ── */
+:root {
+    --green-primary: #16A34A;
+    --green-light: #22C55E;
+    --green-soft: #DCFCE7;
+    --bg: #F8FFF8;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+}
 
 *,
 *::before,
@@ -12,19 +23,40 @@
     box-sizing: border-box;
 }
 
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 .accounts-page {
     min-height: 100vh;
-    background: var(--app-background, #f1f5f9);
-    color: #111827;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
     overflow-x: hidden;
-    /* prevent page-level horizontal scroll */
+    animation: fadeIn 0.4s ease;
 }
 
 .accounts-shell,
 .account-detail-shell {
     width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 24px 0 40px;
+    padding: 28px 0 40px;
 }
 
 
@@ -39,23 +71,25 @@
     justify-content: space-between;
     gap: 14px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+    animation: fadeInUp 0.4s ease;
 }
 
 .accounts-topbar h1,
 .account-detail-top h2 {
     margin: 4px 0 6px;
     font-size: 30px;
-    font-weight: 900;
+    font-weight: 800;
     line-height: 1.1;
-    color: #1e3a5f;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
 }
 
 .accounts-topbar p,
 .account-detail-top p {
     margin: 0;
-    color: #64748b;
-    font-size: 13px;
+    color: var(--text-secondary);
+    font-size: 13.5px;
     line-height: 1.5;
 }
 
@@ -69,20 +103,43 @@
     align-items: center;
     gap: 6px;
     border: 0;
-    border-radius: 8px;
-    padding: 11px 18px;
-    background: #1e3a5f;
+    border-radius: 12px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--green-primary), var(--green-light));
     color: white;
     cursor: pointer;
-    font-weight: 800;
-    font-size: 13px;
+    font-weight: 700;
+    font-size: 13.5px;
     white-space: nowrap;
     flex-shrink: 0;
-    transition: background 0.15s;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .primary-account-btn:hover {
-    background: #162d4a;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(22, 163, 74, 0.35);
+}
+
+.primary-account-btn:active {
+    transform: translateY(0);
+}
+
+.secondary-btn {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13.5px;
+    transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+    border-color: var(--green-light);
+    background: var(--green-soft);
 }
 
 
@@ -94,28 +151,37 @@
 .account-detail-metrics {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 20px;
+    gap: 16px;
+    margin-bottom: 22px;
+    animation: fadeInUp 0.45s ease;
 }
 
 .account-stats div,
 .account-detail-metrics div {
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    border-radius: 10px;
-    padding: 16px 18px;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-    min-height: 90px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 20px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    min-height: 92px;
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms ease, border-color 300ms ease;
+}
+
+.account-stats div:hover,
+.account-detail-metrics div:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: var(--green-light);
+    box-shadow: 0 16px 34px rgba(22, 163, 74, 0.14);
 }
 
 .account-stats span,
 .account-detail-metrics span {
     display: block;
-    color: #64748b;
-    font-size: 11px;
+    color: var(--text-secondary);
+    font-size: 11.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
 }
 
 .account-stats strong,
@@ -123,13 +189,13 @@
     display: block;
     margin-top: 10px;
     font-size: 26px;
-    font-weight: 900;
-    color: #1e3a5f;
+    font-weight: 800;
+    color: var(--text-primary);
     line-height: 1.1;
 }
 
 .account-detail-metrics .due {
-    background: linear-gradient(135deg, #1e3a5f, #0f766e);
+    background: linear-gradient(135deg, var(--green-primary), #0d5c30);
     border-color: transparent;
 }
 
@@ -145,11 +211,12 @@
 
 .accounts-card,
 .account-items-card {
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.07);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
     overflow: hidden;
+    animation: fadeInUp 0.5s ease;
 }
 
 
@@ -164,27 +231,24 @@
     justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
-    padding: 16px 18px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
 }
 
 .accounts-toolbar h2,
 .account-items-head h3 {
     margin: 0;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 800;
-    color: #1e3a5f;
+    color: var(--text-primary);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
-
-/* Right side of toolbar */
-
 .accounts-toolbar-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
     flex: 1;
     justify-content: flex-end;
@@ -195,26 +259,27 @@
 /* ── Search input ── */
 
 .accounts-toolbar input {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #f8fafc;
-    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #FAFDFB;
+    padding: 9px 14px;
     font-size: 13px;
-    color: #111827;
+    color: var(--text-primary);
     outline: none;
-    width: 200px;
+    width: 220px;
     min-width: 0;
     flex-shrink: 1;
     transition: border-color 0.15s, background 0.15s;
 }
 
 .accounts-toolbar input:focus {
-    border-color: #1e3a5f;
+    border-color: var(--green-primary);
     background: white;
+    box-shadow: 0 0 0 3px var(--green-soft);
 }
 
 .accounts-toolbar input::placeholder {
-    color: #94a3b8;
+    color: #9CA3AF;
 }
 
 
@@ -227,37 +292,38 @@
 }
 
 .filter-btn {
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 7px 13px;
-    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
     background: white;
-    color: #374151;
+    color: var(--text-secondary);
     white-space: nowrap;
-    transition: all 0.15s;
+    transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
-    background: #f1f5f9;
+    border-color: var(--green-light);
+    color: var(--green-primary);
 }
 
 .filter-btn.active {
-    background: #1e3a5f;
+    background: linear-gradient(135deg, var(--green-primary), var(--green-light));
     color: white;
-    border-color: #1e3a5f;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
 }
 
 
 /* ══════════════════════════════
-   TABLE WRAPPER — KEY FIX
+   TABLE WRAPPER
 ══════════════════════════════ */
 
 .accounts-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    /* Always show thin scrollbar */
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 transparent;
 }
@@ -267,11 +333,11 @@
 }
 
 .accounts-table-wrap::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: #F1F5F9;
 }
 
 .accounts-table-wrap::-webkit-scrollbar-thumb {
-    background: #94a3b8;
+    background: #94A3B8;
     border-radius: 10px;
 }
 
@@ -283,53 +349,60 @@
 .accounts-table {
     width: 100%;
     min-width: 640px;
-    /* forces scroll before squishing */
     border-collapse: collapse;
     table-layout: auto;
 }
 
+.accounts-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
 .accounts-table th {
-    padding: 11px 16px;
-    border-bottom: 2px solid #e2e8f0;
+    padding: 12px 18px;
+    border-bottom: 2px solid var(--border);
     text-align: left;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
-    background: #f8fafc;
+    background: #FAFDFB;
 }
 
 .accounts-table td {
-    padding: 14px 16px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 15px 18px;
+    border-bottom: 1px solid #F0F3F1;
     text-align: left;
-    color: #1f2937;
-    font-size: 13px;
-    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 13.5px;
+    font-weight: 500;
 }
 
 .accounts-table tr:last-child td {
     border-bottom: none;
 }
 
-.accounts-table tbody tr:hover td {
-    background: #f8fafc;
+.accounts-table tbody tr {
+    transition: background-color 0.18s ease;
 }
 
+.accounts-table tbody tr:nth-child(even) {
+    background: #FBFEFC;
+}
 
-/* Name column — allow wrap */
+.accounts-table tbody tr:hover td {
+    background: var(--green-soft);
+}
 
 .accounts-table td:first-child {
     white-space: normal;
     font-weight: 700;
-    color: #1e3a5f;
+    color: var(--text-primary);
     min-width: 90px;
 }
-
-
-/* Action column — always right aligned */
 
 .accounts-table th:last-child,
 .accounts-table td:last-child {
@@ -341,12 +414,12 @@
 /* ── Amount colors ── */
 
 .due-amount {
-    color: #dc2626;
+    color: var(--danger);
     font-weight: 800;
 }
 
 .paid-amount {
-    color: #15803d;
+    color: var(--success);
     font-weight: 800;
 }
 
@@ -354,19 +427,21 @@
 /* ── View button ── */
 
 .view-btn {
-    background: #1e3a5f;
+    background: linear-gradient(135deg, var(--green-primary), var(--green-light));
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 6px 14px;
+    border-radius: 10px;
+    padding: 7px 15px;
     cursor: pointer;
     font-size: 12px;
     font-weight: 700;
-    transition: background 0.15s;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .view-btn:hover {
-    background: #162d4a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
 }
 
 
@@ -375,33 +450,34 @@
 ══════════════════════════════ */
 
 .accounts-notice {
-    margin-bottom: 14px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    color: #15803d;
+    margin-bottom: 16px;
+    padding: 11px 16px;
+    border-radius: 12px;
+    background: var(--green-soft);
+    border: 1px solid #BBF7D0;
+    color: #15803D;
     font-weight: 700;
     font-size: 13px;
+    animation: fadeInUp 0.3s ease;
 }
 
 .accounts-empty,
 .accounts-error {
     margin: 16px;
-    padding: 18px;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 12px;
     text-align: center;
-    font-size: 13px;
+    font-size: 13.5px;
 }
 
 .accounts-empty {
-    color: #94a3b8;
+    color: var(--text-secondary);
 }
 
 .accounts-error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #b91c1c;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #B91C1C;
     font-weight: 700;
 }
 
@@ -419,28 +495,30 @@
     padding: 16px;
     background: rgba(15, 23, 42, 0.5);
     overflow-y: auto;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.2s ease;
 }
 
 .account-form {
     width: min(460px, 100%);
-    border-radius: 12px;
+    border-radius: 20px;
     background: white;
-    padding: 26px;
-    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+    padding: 28px;
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+    animation: fadeInUp 0.25s ease;
 }
 
 .account-form h2 {
     margin: 0 0 18px;
     font-size: 18px;
-    font-weight: 900;
-    color: #1e3a5f;
+    font-weight: 800;
+    color: var(--text-primary);
 }
 
 .account-form label {
     display: block;
     margin: 14px 0 5px;
-    color: #475467;
+    color: var(--text-secondary);
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
@@ -449,34 +527,35 @@
 
 .account-form input {
     width: 100%;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #f8fafc;
-    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #FAFDFB;
+    padding: 11px 13px;
     font-size: 14px;
-    color: #111827;
+    color: var(--text-primary);
     outline: none;
     transition: border-color 0.15s;
 }
 
 .account-form input:focus {
-    border-color: #1e3a5f;
+    border-color: var(--green-primary);
     background: white;
+    box-shadow: 0 0 0 3px var(--green-soft);
 }
 
 .account-form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 22px;
 }
 
 .account-form-actions button:first-child {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 18px;
-    background: #f1f5f9;
-    color: #334155;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 18px;
+    background: #F8FAFC;
+    color: var(--text-primary);
     cursor: pointer;
     font-weight: 700;
     font-size: 13px;
@@ -484,28 +563,391 @@
 }
 
 .account-form-actions button:first-child:hover {
-    background: #e2e8f0;
+    background: #EEF2F1;
 }
 
 .account-form-actions button:last-child {
     border: 0;
-    border-radius: 8px;
-    padding: 10px 18px;
-    background: #1e3a5f;
+    border-radius: 10px;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, var(--green-primary), var(--green-light));
     color: white;
     cursor: pointer;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 13px;
-    transition: background 0.15s;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .account-form-actions button:last-child:hover {
-    background: #162d4a;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.35);
+}
+
+.account-form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 
 /* ══════════════════════════════
-   DETAIL PAGE
+   CUSTOMER DETAIL PANEL
+══════════════════════════════ */
+
+.detail-card {
+    padding: 24px;
+    animation: fadeInUp 0.4s ease;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.detail-header-info h2 {
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+}
+
+.detail-header-info p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 13px;
+}
+
+.detail-balance-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.balance-box {
+    padding: 11px 18px;
+    border-radius: 14px;
+    text-align: center;
+    min-width: 130px;
+}
+
+.balance-box div:first-child {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.balance-box div:last-child {
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 3px;
+}
+
+.balance-box.due {
+    background: #FEF2F2;
+}
+
+.balance-box.due div {
+    color: var(--danger);
+}
+
+.balance-box.paid {
+    background: var(--green-soft);
+}
+
+.balance-box.paid div {
+    color: #15803D;
+}
+
+
+/* ── Payment entry ── */
+
+.payment-entry-box {
+    background: #FFFBEB;
+    border: 1px solid #FCD34D;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.payment-entry-box>span:first-child {
+    font-weight: 700;
+    color: var(--warning);
+    font-size: 13px;
+}
+
+.payment-entry-box input {
+    padding: 9px 13px;
+    border: 1px solid #FCD34D;
+    border-radius: 10px;
+    font-size: 13px;
+    width: 160px;
+    outline: none;
+    background: white;
+}
+
+.payment-entry-box button {
+    background: linear-gradient(135deg, var(--warning), #D97706);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.payment-entry-box button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(217, 119, 6, 0.3);
+}
+
+.payment-entry-box button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.max-due-label {
+    font-size: 12px;
+    color: var(--warning);
+}
+
+
+/* ── Bill history ── */
+
+.bill-history-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.month-group {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+}
+
+.month-group:hover {
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.month-group-header {
+    background: linear-gradient(135deg, var(--green-primary), #0d5c30);
+    padding: 13px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.month-group-header>div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.month-label {
+    font-weight: 800;
+    color: white;
+    font-size: 15px;
+}
+
+.month-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.month-total {
+    font-weight: 800;
+    color: #FDE68A;
+    font-size: 15px;
+}
+
+.bill-row-wrap {
+    border-bottom: 1px solid #F0F3F1;
+}
+
+.bill-row-wrap:last-of-type {
+    border-bottom: none;
+}
+
+.bill-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 18px;
+    background: #FAFDFB;
+    flex-wrap: wrap;
+    gap: 8px;
+    transition: background-color 0.15s ease;
+}
+
+.bill-row-top:hover {
+    background: var(--green-soft);
+}
+
+.bill-row-left {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.bill-row-index {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--green-primary);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bill-row-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+.bill-row-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.bill-row-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.bill-row-amount {
+    font-weight: 800;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.action-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 5px 9px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    transition: transform 0.15s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+}
+
+.action-btn.whatsapp {
+    background: var(--green-primary);
+}
+
+.action-btn.pdf {
+    background: var(--danger);
+}
+
+.bill-items-list {
+    padding: 9px 18px 9px 52px;
+}
+
+.bill-item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #F8FAFC;
+    color: var(--text-secondary);
+}
+
+.bill-item-row span:last-child {
+    font-weight: 600;
+    color: #475569;
+}
+
+.month-footer {
+    background: #FFFBEB;
+    padding: 11px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-top: 1px solid #FCD34D;
+}
+
+.month-footer-total {
+    font-weight: 700;
+    color: var(--warning);
+    font-size: 13px;
+}
+
+.month-footer-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.footer-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.footer-btn:hover {
+    transform: translateY(-1px);
+}
+
+.footer-btn.whatsapp {
+    background: var(--green-primary);
+}
+
+.footer-btn.pdf {
+    background: var(--danger);
+}
+
+.footer-btn.delete {
+    background: #7F1D1D;
+}
+
+.detail-footer-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+
+/* ══════════════════════════════
+   DETAIL (full) PAGE
 ══════════════════════════════ */
 
 .account-detail-page {
@@ -513,13 +955,13 @@
     inset: 0;
     z-index: 1000;
     overflow-y: auto;
-    background: var(--app-background, #f1f5f9);
+    background: var(--bg);
 }
 
 .account-detail-top span {
-    color: #0f766e;
+    color: var(--green-primary);
     font-size: 11px;
-    font-weight: 900;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -543,7 +985,8 @@
     }
     .account-stats,
     .account-detail-metrics {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
     }
     .accounts-topbar h1,
     .account-detail-top h2 {
@@ -552,15 +995,14 @@
 }
 
 
-/* ── Small tablet (640px) ── */
+/* ── Small tablet / large phone (640px) ── */
 
 @media (max-width: 640px) {
     .accounts-shell,
     .account-detail-shell {
         width: calc(100% - 16px);
-        padding: 16px 0 28px;
+        padding: 18px 0 30px;
     }
-    /* Top bar stacks vertically */
     .accounts-topbar,
     .account-detail-top {
         flex-direction: column;
@@ -571,35 +1013,37 @@
     .account-detail-top h2 {
         font-size: 22px;
     }
-    /* Add Customer button full width */
-    .primary-account-btn {
+    .primary-account-btn,
+    .secondary-btn {
         width: 100%;
         justify-content: center;
-        padding: 12px;
+        padding: 13px;
         font-size: 14px;
     }
-    /* Stats single column */
+    .detail-footer-actions {
+        flex-direction: column;
+    }
+    /* Stats: 3 tight columns on phone */
     .account-stats,
     .account-detail-metrics {
-        grid-template-columns: 1fr;
-        gap: 10px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
     }
     .account-stats div,
     .account-detail-metrics div {
         min-height: unset;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 14px 16px;
+        padding: 12px 10px;
+        border-radius: 14px;
+        text-align: center;
     }
     .account-stats span,
     .account-detail-metrics span {
-        font-size: 12px;
+        font-size: 10px;
     }
     .account-stats strong,
     .account-detail-metrics strong {
-        font-size: 20px;
-        margin-top: 0;
+        font-size: 17px;
+        margin-top: 6px;
     }
     /* Toolbar stacks */
     .accounts-toolbar,
@@ -607,20 +1051,18 @@
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
-        padding: 12px 14px;
+        padding: 14px 16px;
     }
     .accounts-toolbar-actions {
         flex-direction: column;
         align-items: stretch;
         width: 100%;
     }
-    /* Search full width */
     .accounts-toolbar input {
         width: 100% !important;
         font-size: 14px;
-        padding: 10px 12px;
+        padding: 11px 13px;
     }
-    /* Filter buttons row — full width */
     .filter-btn-group {
         width: 100%;
         display: flex;
@@ -629,9 +1071,8 @@
         flex: 1;
         text-align: center;
         padding: 9px 6px;
-        font-size: 12px;
+        font-size: 11.5px;
     }
-    /* Table scroll hint */
     .accounts-table-wrap {
         position: relative;
     }
@@ -640,11 +1081,10 @@
         display: block;
         text-align: center;
         font-size: 10px;
-        color: #94a3b8;
-        padding: 5px 0 2px;
+        color: #9CA3AF;
+        padding: 6px 0 3px;
         font-style: italic;
     }
-    /* Table cells smaller on mobile */
     .accounts-table th {
         padding: 10px 12px;
         font-size: 10px;
@@ -653,9 +1093,9 @@
         padding: 12px 12px;
         font-size: 12px;
     }
-    /* Form full width */
     .account-form {
-        padding: 20px 18px;
+        padding: 22px 18px;
+        border-radius: 18px;
     }
     .account-form-actions {
         flex-direction: column-reverse;
@@ -665,6 +1105,57 @@
         width: 100%;
         text-align: center;
         justify-content: center;
+    }
+    /* Detail panel stacks cleanly */
+    .detail-card {
+        padding: 18px;
+    }
+    .detail-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .detail-balance-group {
+        width: 100%;
+    }
+    .balance-box {
+        flex: 1;
+        min-width: 0;
+    }
+    .payment-entry-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .payment-entry-box input {
+        width: 100%;
+    }
+    .payment-entry-box button {
+        width: 100%;
+    }
+    .month-group-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .bill-row-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .bill-row-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .bill-items-list {
+        padding: 9px 14px;
+    }
+    .month-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .month-footer-actions {
+        flex-direction: column;
+    }
+    .footer-btn {
+        width: 100%;
+        text-align: center;
     }
 }
 
@@ -678,7 +1169,7 @@
     }
     .account-stats strong,
     .account-detail-metrics strong {
-        font-size: 18px;
+        font-size: 15px;
     }
     .accounts-table th {
         font-size: 9px;
@@ -689,7 +1180,10 @@
         padding: 10px 8px;
     }
     .filter-btn {
-        font-size: 11px;
+        font-size: 10.5px;
         padding: 8px 4px;
+    }
+    .balance-box div:last-child {
+        font-size: 15px;
     }
 }

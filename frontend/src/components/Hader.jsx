@@ -7,63 +7,45 @@ import { useState, useEffect } from "react";
 
 function Header() {
   const navigate = useNavigate();
-  
-const [printerConnected, setPrinterConnected] = useState(false);
-const [printerName, setPrinterName] = useState(null);
 
-useEffect(() => {
-  // Check printer status every 3 seconds
-  const interval = setInterval(() => {
-    setPrinterConnected(isPrinterConnected());
-    setPrinterName(getPrinterName());
-  }, 3000);
-  return () => clearInterval(interval);
-}, []);
+  const [printerConnected, setPrinterConnected] = useState(false);
+  const [printerName, setPrinterName] = useState(null);
 
-const handleConnectPrinter = async () => {
-  try {
-    await connectPrinter();
-    setPrinterConnected(true);
-    setPrinterName(getPrinterName());
-  } catch (err) {
-    alert("Could not connect to printer. Make sure Bluetooth is ON and printer is nearby.");
-  }
-};
+  useEffect(() => {
+    // Check printer status every 3 seconds
+    const interval = setInterval(() => {
+      setPrinterConnected(isPrinterConnected());
+      setPrinterName(getPrinterName());
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleConnectPrinter = async () => {
+    try {
+      await connectPrinter();
+      setPrinterConnected(true);
+      setPrinterName(getPrinterName());
+    } catch (err) {
+      alert("Could not connect to printer. Make sure Bluetooth is ON and printer is nearby.");
+    }
+  };
+
   return (
     <header className="header">
       <div onClick={() => navigate("/Dashboard")} className="header-left">
-        <img src={logo} alt="Gangadhar Provision Store" className="logo" />
+        <img src={logo} alt="SystemNirmata" className="logo" />
       </div>
 
-      <div onClick={() => navigate("/Dashboard")} className="header-center">
-        <h2>Gangadhar Provision Store</h2>
-        <p>Billing & Monthly Account System</p>
-      </div>
-
-      <div className="header-right">
-        <span>Owner: Gangadhar</span>
-      </div>
-      <div style={{
-        display: "flex", alignItems: "center",
-        gap: "8px", fontSize: "12px"
-      }}>
-        <div style={{
-          width: "8px", height: "8px", borderRadius: "50%",
-          backgroundColor: printerConnected ? "#16a34a" : "#dc2626"
-        }} />
+      <div className="printer-status">
+        <div
+          className={`printer-dot ${printerConnected ? "connected" : "disconnected"}`}
+        />
         {printerConnected ? (
-          <span style={{ color: "#16a34a" }}>
+          <span className="printer-connected-label">
             🖨️ {printerName || "Printer"} Connected
           </span>
         ) : (
-          <button
-            onClick={handleConnectPrinter}
-            style={{
-              padding: "4px 10px", backgroundColor: "#1e3a5f",
-              color: "white", border: "none", borderRadius: "6px",
-              cursor: "pointer", fontSize: "12px"
-            }}
-          >
+          <button onClick={handleConnectPrinter} className="printer-connect-btn">
             🖨️ Connect Printer
           </button>
         )}

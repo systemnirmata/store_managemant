@@ -4,6 +4,93 @@ import api from "../api/api";
 import { isAllowedName } from "../utils/validation";
 import Header from "../components/Hader";
 import Footer from "../components/Footer";
+import "../style/categories.css";
+
+/* ── tiny presentational icons (no new dependency) ── */
+const IconTag = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+    <circle cx="7.5" cy="7.5" r="1.5" fill="white" stroke="none" />
+  </svg>
+);
+const IconSearch = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+  </svg>
+);
+const IconRefresh = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M21 3v5h-5" />
+    <path d="M21 12a9 9 0 0 1-15 6.7L3 16" /><path d="M8 16H3v5" />
+  </svg>
+);
+const IconLayers = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m12 2 9 5-9 5-9-5z" /><path d="m3 12 9 5 9-5" /><path d="m3 17 9 5 9-5" />
+  </svg>
+);
+const IconFileText = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z" /><path d="M14 2v6h6" />
+  </svg>
+);
+const IconClock = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+  </svg>
+);
+const IconFolderOpen = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2" />
+  </svg>
+);
+const IconInbox = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+    <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z" />
+  </svg>
+);
+const IconEdit = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+  </svg>
+);
+const IconTrash = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+  </svg>
+);
+
+/* Purely cosmetic count-up used only for the stat cards (no business logic involved) */
+function useCountUp(target, durationMs = 600) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let raf;
+    const start = performance.now();
+    const from = 0;
+    const tick = (now) => {
+      const progress = Math.min(1, (now - start) / durationMs);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(from + (target - from) * eased));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, durationMs]);
+  return value;
+}
+
+function StatCard({ icon, value, label }) {
+  const animated = useCountUp(value);
+  return (
+    <div className="cm-stat-card">
+      <div className="cm-stat-icon">{icon}</div>
+      <div className="cm-stat-value">{animated}</div>
+      <div className="cm-stat-label">{label}</div>
+    </div>
+  );
+}
+
 function Categories() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -13,6 +100,11 @@ function Categories() {
   const [form, setForm]             = useState({ cname: "", description: "" });
   const [loading, setLoading]       = useState(false);
 
+  // Cosmetic-only UI state: first-load skeleton + refresh spin animation.
+  // Neither affects data fetching, validation, or business logic.
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing]     = useState(false);
+
   useEffect(() => { fetchCategories(); }, []);
 
   const fetchCategories = async () => {
@@ -21,7 +113,15 @@ function Categories() {
       setCategories(res.data);
     } catch {
       alert("Failed to load categories");
+    } finally {
+      setInitialLoading(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchCategories();
+    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   const openAdd = () => {
@@ -82,188 +182,201 @@ function Categories() {
     c.cname.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Derived-only stats — computed purely from existing `categories` data.
+  // No new fields, endpoints, or stored state are introduced.
+  const withDescription = categories.filter(c => c.description && c.description.trim()).length;
+  const withoutDescription = categories.length - withDescription;
+  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const addedThisWeek = categories.filter(c => c.created_at && new Date(c.created_at).getTime() >= oneWeekAgo).length;
+
   return (
-    <div style={styles.page}>
-        <div><Header/></div>
-      {/* Header */}
-      <div style={{ ...styles.header, flexWrap: "wrap", alignItems: "center" }}>
-        <button onClick={() => navigate("/Dashboard")} style={styles.backBtn}>
-          ← Back
-        </button>
-        <div style={{ flex: "1 1 auto", minWidth: "240px" }}>
-          <h2 style={styles.title}>Categories</h2>
-          <p style={styles.subtitle}>Manage your product categories</p>
+    <div className="cm-page">
+      <div><Header /></div>
+
+      <div className="cm-container">
+        {/* Breadcrumb */}
+        <div className="cm-breadcrumb">
+          <button onClick={() => navigate("/Dashboard")}>Dashboard</button>
+          <span>/</span>
+          <span className="cm-crumb-current">Categories</span>
         </div>
-        <button onClick={openAdd} style={styles.addBtn}>+ Add Category</button>
-      </div>
 
-      {/* Search */}
-      <div style={styles.searchRow}>
-        <input
-          type="text"
-          placeholder="Search categories..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={styles.searchInput}
-        />
-        <span style={styles.countBadge}>{filtered.length} categories</span>
-      </div>
+        {/* Header card */}
+        <div className="cm-header-card">
+          <div className="cm-header-top">
+            <div className="cm-title-row">
+              <div className="cm-icon-badge"><IconTag /></div>
+              <div>
+                <h2 className="cm-title">Category Management</h2>
+                <p className="cm-subtitle">Organize your products into categories for faster billing and cleaner stock tracking.</p>
+              </div>
+            </div>
+            <div className="cm-header-actions">
+              <button onClick={() => navigate("/Dashboard")} className="cm-back-btn">← Back</button>
+            </div>
+          </div>
 
-      {/* Table */}
-      <div style={styles.tableWrapper}>
-        <table style={styles.table}>
-          <thead>
-            <tr style={styles.theadRow}>
-              <th style={styles.th}>#</th>
-              <th style={styles.th}>Category Name</th>
-              <th style={styles.th}>Description</th>
-              <th style={styles.th}>Created At</th>
-              <th style={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={5} style={styles.emptyRow}>
-                  No categories found. Click "+ Add Category" to create one.
-                </td>
-              </tr>
-            ) : (
-              filtered.map((cat, index) => (
-                <tr key={cat.cid} style={styles.tbodyRow}
-                  onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                  onMouseLeave={e => e.currentTarget.style.backgroundColor = "white"}
-                >
-                  <td style={styles.td}>{index + 1}</td>
-                  <td style={styles.td}>
-                    <span style={styles.catName}>{cat.cname}</span>
-                  </td>
-                  <td style={styles.td}>
-                    {cat.description || <span style={{ color: "#9ca3af" }}>—</span>}
-                  </td>
-                  <td style={styles.td}>
-                    {new Date(cat.created_at).toLocaleDateString("en-IN")}
-                  </td>
-                  <td style={styles.td}>
-                    <button onClick={() => openEdit(cat)} style={styles.editBtn}>
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(cat.cid, cat.cname)}
-                      style={styles.deleteBtn}>
-                      Delete
-                    </button>
-                  </td>
+          <div className="cm-chip-row">
+            <div className="cm-chip"><span className="cm-chip-dot" />{categories.length} total categories</div>
+            <div className="cm-chip"><span className="cm-chip-dot" />{withDescription} described</div>
+            <div className="cm-chip"><span className="cm-chip-dot" />{addedThisWeek} added this week</div>
+          </div>
+        </div>
+
+        {/* Stat cards */}
+        <div className="cm-stats-grid">
+          <StatCard icon={<IconLayers />} value={categories.length} label="Total Categories" />
+          <StatCard icon={<IconFileText />} value={withDescription} label="With Description" />
+          <StatCard icon={<IconFolderOpen />} value={withoutDescription} label="Without Description" />
+          <StatCard icon={<IconClock />} value={addedThisWeek} label="Added This Week" />
+        </div>
+
+        {/* Toolbar */}
+        <div className="cm-toolbar">
+          <div className="cm-search-wrap">
+            <IconSearch />
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="cm-search-input"
+            />
+          </div>
+          <div className="cm-toolbar-right">
+            <span className="cm-count-badge">{filtered.length} categories</span>
+            <button
+              onClick={handleRefresh}
+              className={`cm-icon-btn ${isRefreshing ? "spinning" : ""}`}
+              title="Refresh"
+              aria-label="Refresh categories"
+            >
+              <IconRefresh />
+            </button>
+            <button onClick={openAdd} className="cm-add-btn">+ Add Category</button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="cm-table-card">
+          <div className="cm-table-scroll">
+            <table className="cm-table">
+              <thead className="cm-thead">
+                <tr>
+                  <th className="cm-th">#</th>
+                  <th className="cm-th">Category Name</th>
+                  <th className="cm-th">Description</th>
+                  <th className="cm-th">Created</th>
+                  <th className="cm-th">Actions</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {initialLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <tr className="cm-skeleton-row" key={`sk-${i}`}>
+                      <td><div className="cm-skeleton-bar" style={{ width: "16px" }} /></td>
+                      <td><div className="cm-skeleton-bar" style={{ width: "140px" }} /></td>
+                      <td><div className="cm-skeleton-bar" style={{ width: "220px" }} /></td>
+                      <td><div className="cm-skeleton-bar" style={{ width: "90px" }} /></td>
+                      <td><div className="cm-skeleton-bar" style={{ width: "110px" }} /></td>
+                    </tr>
+                  ))
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={5}>
+                      <div className="cm-empty-state">
+                        <IconInbox />
+                        <h4>No categories found</h4>
+                        <p>
+                          {search
+                            ? "Try a different search term, or clear the search to see all categories."
+                            : "Create your first category to start organizing your products."}
+                        </p>
+                        <button onClick={openAdd} className="cm-add-btn">+ Add Category</button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((cat, index) => (
+                    <tr key={cat.cid} className="cm-row">
+                      <td className="cm-td cm-td-index">{index + 1}</td>
+                      <td className="cm-td">
+                        <div className="cm-name-cell">
+                          <div className="cm-avatar">{cat.cname.charAt(0).toUpperCase()}</div>
+                          <span className="cm-cat-name">{cat.cname}</span>
+                        </div>
+                      </td>
+                      <td className="cm-td cm-desc-cell">
+                        {cat.description || <span className="cm-empty-value">—</span>}
+                      </td>
+                      <td className="cm-td cm-date-cell">
+                        {new Date(cat.created_at).toLocaleDateString("en-IN")}
+                      </td>
+                      <td className="cm-td">
+                        <div className="cm-actions">
+                          <button onClick={() => openEdit(cat)} className="cm-action-btn cm-edit-btn" title="Edit category">
+                            <IconEdit /> Edit
+                          </button>
+                          <button onClick={() => handleDelete(cat.cid, cat.cname)} className="cm-action-btn cm-delete-btn" title="Delete category">
+                            <IconTrash /> Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Modal */}
       {showModal && (
-        <div style={styles.overlay}>
-          <div style={styles.modal}>
-            <h3 style={styles.modalTitle}>
-              {editItem ? "Edit Category" : "Add New Category"}
-            </h3>
+        <div className="cm-modal-overlay">
+          <div className="cm-modal">
+            <div className="cm-modal-header">
+              <h3>{editItem ? "Edit Category" : "Add New Category"}</h3>
+              <p>{editItem ? "Update the details for this category." : "Create a category to group related products."}</p>
+            </div>
 
-            <label style={styles.label}>Category Name *</label>
-            <input
-              type="text"
-              placeholder="e.g. Drinks, Biscuits, Ice Cream"
-              value={form.cname}
-              onChange={e => setForm({ ...form, cname: e.target.value })}
-              style={styles.input}
-            />
+            <div className="cm-modal-body">
+              <div className="cm-field">
+                <label>Category Name *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Drinks, Biscuits, Ice Cream"
+                  value={form.cname}
+                  onChange={e => setForm({ ...form, cname: e.target.value })}
+                />
+              </div>
 
-            <label style={styles.label}>Description (optional)</label>
-            <textarea
-              placeholder="Short description..."
-              value={form.description}
-              onChange={e => setForm({ ...form, description: e.target.value })}
-              style={styles.textarea}
-              rows={3}
-            />
+              <div className="cm-field">
+                <label>Description (optional)</label>
+                <textarea
+                  placeholder="Short description..."
+                  value={form.description}
+                  onChange={e => setForm({ ...form, description: e.target.value })}
+                  rows={3}
+                />
+              </div>
+            </div>
 
-            <div style={styles.modalActions}>
-              <button onClick={() => setShowModal(false)} style={styles.cancelBtn}>
+            <div className="cm-modal-actions">
+              <button onClick={() => setShowModal(false)} className="cm-cancel-btn">
                 Cancel
               </button>
-              <button onClick={handleSave} disabled={loading} style={styles.saveBtn}>
+              <button onClick={handleSave} disabled={loading} className="cm-save-btn">
                 {loading ? "Saving..." : editItem ? "Update" : "Add Category"}
               </button>
             </div>
           </div>
         </div>
       )}
-      <div>
-        <Footer/>
-      </div>
+
+      <div><Footer /></div>
     </div>
   );
 }
-
-const styles = {
-  page:         { padding: "24px", backgroundColor: "#f8fafc", minHeight: "100vh" },
-  header:       { display: "flex", justifyContent: "space-between",
-                  alignItems: "flex-start", marginBottom: "20px" },
-  title:        { margin: 0, fontSize: "22px", fontWeight: "700", color: "#1e293b" },
-  subtitle:     { margin: "4px 0 0", fontSize: "13px", color: "#64748b" },
-  addBtn:       { padding: "10px 20px", backgroundColor: "#2563eb", color: "white",
-                  border: "none", borderRadius: "8px", cursor: "pointer",
-                  fontSize: "14px", fontWeight: "600" },
-  searchRow:    { display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" },
-  searchInput:  { padding: "9px 14px", border: "1px solid #cbd5e1", borderRadius: "8px",
-                  fontSize: "14px", width: "280px", outline: "none" },
-  countBadge:   { fontSize: "13px", color: "#64748b", backgroundColor: "#e2e8f0",
-                  padding: "4px 10px", borderRadius: "20px" },
-  tableWrapper: { backgroundColor: "white", borderRadius: "10px",
-                  boxShadow: "0 1px 6px rgba(0,0,0,0.07)",
-                  overflowX: "auto", overflowY: "auto",
-                  maxHeight: "calc(100vh - 280px)" },
-  table:        { width: "100%", borderCollapse: "collapse" },
-  theadRow:     { backgroundColor: "#f1f5f9" },
-  th:           { padding: "12px 16px", textAlign: "left", fontSize: "12px",
-                  fontWeight: "700", color: "#475569", textTransform: "uppercase",
-                  letterSpacing: "0.5px", borderBottom: "1px solid #e2e8f0" },
-  tbodyRow:     { borderBottom: "1px solid #f1f5f9", backgroundColor: "white" },
-  td:           { padding: "13px 16px", fontSize: "14px", color: "#374151" },
-  catName:      { fontWeight: "600", color: "#1e293b" },
-  emptyRow:     { padding: "40px", textAlign: "center",
-                  color: "#9ca3af", fontSize: "14px" },
-  editBtn:      { padding: "5px 14px", backgroundColor: "#dbeafe", color: "#1d4ed8",
-                  border: "none", borderRadius: "6px", cursor: "pointer",
-                  fontSize: "13px", fontWeight: "600", marginRight: "6px" },
-  deleteBtn:    { padding: "5px 14px", backgroundColor: "#fee2e2", color: "#dc2626",
-                  border: "none", borderRadius: "6px", cursor: "pointer",
-                  fontSize: "13px", fontWeight: "600" },
-  overlay:      { position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  zIndex: 1000 },
-  modal:        { backgroundColor: "white", borderRadius: "12px", padding: "28px",
-                  width: "100%", maxWidth: "440px",
-                  boxShadow: "0 10px 40px rgba(0,0,0,0.15)" },
-  modalTitle:   { margin: "0 0 20px", fontSize: "18px",
-                  fontWeight: "700", color: "#1e293b" },
-  label:        { display: "block", fontSize: "13px", fontWeight: "600",
-                  color: "#374151", marginBottom: "6px" },
-  input:        { width: "100%", padding: "10px 12px", border: "1px solid #cbd5e1",
-                  borderRadius: "8px", fontSize: "14px", marginBottom: "14px",
-                  boxSizing: "border-box", outline: "none" },
-  textarea:     { width: "100%", padding: "10px 12px", border: "1px solid #cbd5e1",
-                  borderRadius: "8px", fontSize: "14px", marginBottom: "20px",
-                  boxSizing: "border-box", outline: "none", resize: "vertical" },
-  modalActions: { display: "flex", gap: "10px", justifyContent: "flex-end" },
-  cancelBtn:    { padding: "9px 18px", backgroundColor: "#f1f5f9", color: "#374151",
-                  border: "none", borderRadius: "8px", cursor: "pointer",
-                  fontSize: "14px" },
-  saveBtn:      { padding: "9px 20px", backgroundColor: "#2563eb", color: "white",
-                  border: "none", borderRadius: "8px", cursor: "pointer",
-                  fontSize: "14px", fontWeight: "600" },
-  backBtn:      { padding: "8px 16px", backgroundColor: "#e2e8f0", color: "#1f2937",
-                  border: "none", borderRadius: "8px", cursor: "pointer",
-                  fontSize: "13px", fontWeight: "700" },
-};
 
 export default Categories;
