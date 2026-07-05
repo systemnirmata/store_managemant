@@ -7,7 +7,6 @@ let printerDevice = null;
 // ── CONNECT PRINTER ──────────────────────────────────────────
 export async function connectPrinter() {
     try {
-        // Request device from user
         const device = await navigator.bluetooth.requestDevice({
             filters: [
                 { services: ['000018f0-0000-1000-8000-00805f9b34fb'] },
@@ -19,15 +18,11 @@ export async function connectPrinter() {
         });
 
         printerDevice = device;
-
-        // Save device name for reconnect
         sessionStorage.setItem("printerName", device.name || "Printer");
 
-        // Listen for disconnect
         device.addEventListener('gattserverdisconnected', () => {
             printerCharacteristic = null;
             console.log("Printer disconnected");
-            // Auto reconnect
             autoReconnect();
         });
 
@@ -57,12 +52,11 @@ async function autoReconnect() {
     if (!printerDevice) return;
     try {
         console.log("Reconnecting to printer...");
-        await new Promise(r => setTimeout(r, 1000)); // wait 1 second
+        await new Promise(r => setTimeout(r, 1000));
         printerCharacteristic = await getCharacteristic(printerDevice);
         console.log("Printer reconnected!");
     } catch (err) {
         console.log("Auto reconnect failed:", err);
-        // Try again after 3 seconds
         setTimeout(autoReconnect, 3000);
     }
 }
@@ -70,17 +64,21 @@ async function autoReconnect() {
 // ── CHECK IF CONNECTED ───────────────────────────────────────
 export function isPrinterConnected() {
     return printerCharacteristic !== null &&
-        printerDevice ? .gatt ? .connected === true;
+        printerDevice != null &&
+        printerDevice.gatt != null &&
+        printerDevice.gatt.connected === true;
 }
 
-// ── GET PRINTER STATUS ───────────────────────────────────────
+// ── GET PRINTER NAME ─────────────────────────────────────────
 export function getPrinterName() {
     return sessionStorage.getItem("printerName") || null;
 }
 
 // ── DISCONNECT PRINTER ───────────────────────────────────────
 export function disconnectPrinter() {
-    if (printerDevice ? .gatt ? .connected) {
+    if (printerDevice != null &&
+        printerDevice.gatt != null &&
+        printerDevice.gatt.connected) {
         printerDevice.gatt.disconnect();
     }
     printerCharacteristic = null;
@@ -94,27 +92,23 @@ export function createReceiptData(bill) {
     const lines = [];
 
     lines.push(new Uint8Array([ESC, 0x40]));
-    lines.push(new Uint8Array([ESC, 0x61, 0x01])); // center
-
-    lines.push(new Uint8Array([ESC, 0x21, 0x30])); // large bold
+    lines.push(new Uint8Array([ESC, 0x61, 0x01]));
+    lines.push(new Uint8Array([ESC, 0x21, 0x30]));
     lines.push(encoder.encode("GANGADHAR PROVISION\n"));
     lines.push(encoder.encode("STORE\n"));
-
-    lines.push(new Uint8Array([ESC, 0x21, 0x00])); // normal
+    lines.push(new Uint8Array([ESC, 0x21, 0x00]));
     lines.push(encoder.encode("Bhavnagar, Gujarat - 364001\n"));
     lines.push(encoder.encode("Ph: 95860 52965\n"));
     lines.push(encoder.encode("GSTIN: 24ADHPP9881D1Z9\n"));
     lines.push(encoder.encode("--------------------------------\n"));
-
-    lines.push(new Uint8Array([ESC, 0x61, 0x00])); // left
+    lines.push(new Uint8Array([ESC, 0x61, 0x00]));
     lines.push(encoder.encode(`Bill No : #${bill.bid}\n`));
     lines.push(encoder.encode(`Date    : ${new Date(bill.created_at).toLocaleDateString("en-IN")}\n`));
     lines.push(encoder.encode(`Customer: ${bill.cname}\n`));
     lines.push(encoder.encode(`Phone   : ${bill.phone || "-"}\n`));
     lines.push(encoder.encode(`Payment : ${bill.paymentType}\n`));
     lines.push(encoder.encode("--------------------------------\n"));
-
-    lines.push(new Uint8Array([ESC, 0x21, 0x08])); // bold
+    lines.push(new Uint8Array([ESC, 0x21, 0x08]));
     lines.push(encoder.encode("Item            Qty    Amount\n"));
     lines.push(new Uint8Array([ESC, 0x21, 0x00]));
     lines.push(encoder.encode("--------------------------------\n"));
@@ -133,11 +127,10 @@ export function createReceiptData(bill) {
     ));
     lines.push(new Uint8Array([ESC, 0x21, 0x00]));
     lines.push(encoder.encode("--------------------------------\n"));
-
-    lines.push(new Uint8Array([ESC, 0x61, 0x01])); // center
+    lines.push(new Uint8Array([ESC, 0x61, 0x01]));
     lines.push(encoder.encode("Thank You! Visit Again\n"));
-    lines.push(new Uint8Array([ESC, 0x64, 0x05])); // feed 5 lines
-    lines.push(new Uint8Array([GS, 0x56, 0x41, 0x10])); // cut
+    lines.push(new Uint8Array([ESC, 0x64, 0x05]));
+    lines.push(new Uint8Array([GS, 0x56, 0x41, 0x10]));
 
     const totalLength = lines.reduce((sum, l) => sum + l.length, 0);
     const result = new Uint8Array(totalLength);
@@ -152,7 +145,6 @@ export function createReceiptData(bill) {
 // ── PRINT BILL ───────────────────────────────────────────────
 export async function printBill(bill) {
     try {
-        // If not connected, connect first
         if (!isPrinterConnected()) {
             await connectPrinter();
         }
@@ -162,6 +154,7 @@ export async function printBill(bill) {
 
         for (let i = 0; i < data.length; i += chunkSize) {
             await printerCharacteristic.writeValue(data.slice(i, i + chunkSize));
+            await new Promise(r => setTimeout(r, 50));
         }
 
         return { success: true };
