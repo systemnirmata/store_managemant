@@ -23,12 +23,14 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://store-managemant-eta.vercel.app",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 Base.metadata.create_all(engine)
 
 app.include_router(admin)
@@ -41,4 +43,7 @@ app.include_router(history_route)
 
 @app.get("/")
 def home():
-    print("Home")
+    return {
+        "status": "success",
+        "message": "Smart Shop Backend Running"
+    }
