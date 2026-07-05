@@ -353,18 +353,19 @@ function Billing() {
           <button onClick={() => navigate("/Dashboard")}>Dashboard</button>
           <span>/</span>
           <span className="bp-crumb-current">Billing</span>
+           <button className="bp-back-btn" onClick={() => navigate("/Dashboard")}>
+                <IconBack /> Back
+              </button>
         </div>
 
         {/* Sticky Top Bar */}
         <section className="bp-topbar">
+          
           <div className="bp-topbar-left">
             <div className="bp-icon-badge"><IconReceipt /></div>
             <div>
-              <button className="bp-back-btn" onClick={() => navigate("/Dashboard")}>
-                <IconBack /> Back
-              </button>
+             
               <h1 className="bp-title">Billing</h1>
-              <p className="bp-subtitle">Select products, choose a payment type, then generate the bill.</p>
             </div>
           </div>
 
