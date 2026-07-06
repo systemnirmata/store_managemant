@@ -120,12 +120,11 @@ export function createReceiptData(bill) {
     lines.push(new Uint8Array([ESC, 0x40]));
     lines.push(new Uint8Array([ESC, 0x61, 0x01]));
     lines.push(new Uint8Array([ESC, 0x21, 0x30]));
-    lines.push(encoder.encode("GANGADHAR PROVISION\n"));
-    lines.push(encoder.encode("STORE\n"));
+    lines.push(encoder.encode("SYSTEM NIRMATA\n"));
     lines.push(new Uint8Array([ESC, 0x21, 0x00]));
     lines.push(encoder.encode("Bhavnagar, Gujarat - 364001\n"));
     lines.push(encoder.encode("Ph: 95860 52965\n"));
-    lines.push(encoder.encode("GSTIN: 24ADHPP9881D1Z9\n"));
+    lines.push(encoder.encode("GSTIN: \n"));
     lines.push(encoder.encode("--------------------------------\n"));
     lines.push(new Uint8Array([ESC, 0x61, 0x00]));
     lines.push(encoder.encode(`Bill No : #${bill.bid}\n`));
