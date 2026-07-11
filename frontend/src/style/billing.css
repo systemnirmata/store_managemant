@@ -555,14 +555,13 @@
 }
 
 .bp-section-card {
-    margin: 12px 20px 20px;
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-    max-height: calc(100vh - 360px);
+    max-height: calc(100vh - 320px);
+    min-height: 620px;
+    /* ensures at least 2 rows always fit */
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    /* clip only here, at the outer edge */
 }
 
 .bp-section-header {
