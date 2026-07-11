@@ -32,3 +32,26 @@ def delete_category(cid: int, db: Session):
     db.commit()
     db.refresh(cat)
     return cat  # ✅ return object not dict
+
+def update_category(cid: int, body, db: Session):
+    cat = db.query(categories).filter(
+        categories.cid == cid,
+        categories.is_active == True
+    ).first()
+    if not cat:
+        raise HTTPException(404, detail="Category not found")
+
+    # Prevent renaming into a duplicate of another active category
+    existing = db.query(categories).filter(
+        categories.cname == body.cname,
+        categories.cid != cid,
+        categories.is_active == True
+    ).first()
+    if existing:
+        raise HTTPException(400, detail="Category name already in use")
+
+    cat.cname = body.cname
+    cat.description = body.description
+    db.commit()
+    db.refresh(cat)
+    return cat
