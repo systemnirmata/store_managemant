@@ -621,6 +621,9 @@
     gap: 14px;
     padding: 18px;
     overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    align-content: start;
 }
 
 .bp-product-card {
